@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
 import { RainbowKitCustomConnectButton } from "~~/components/helper";
 import { useOutsideClick } from "~~/hooks/helper";
 
@@ -14,10 +15,29 @@ export const Header = () => {
   });
 
   return (
-    <div className="sticky lg:static top-0 navbar min-h-0 shrink-0 justify-between z-20 px-0 sm:px-2">
-      <div className="navbar-end grow mr-4">
-        <RainbowKitCustomConnectButton />
+    <header className="sticky top-0 z-20 border-b border-white/50 bg-[#f6efe3]/85 px-4 py-4 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="text-lg font-semibold uppercase tracking-[0.35em] text-stone-900">
+            BlindFactor
+          </Link>
+          <nav className="flex flex-wrap gap-3 text-sm font-medium text-stone-600">
+            <Link href="/" className="transition hover:text-stone-900">
+              Overview
+            </Link>
+            <Link href="/borrower" className="transition hover:text-stone-900">
+              Borrower
+            </Link>
+            <Link href="/lender" className="transition hover:text-stone-900">
+              Lender
+            </Link>
+          </nav>
+        </div>
+
+        <div className="navbar-end grow justify-end">
+          <RainbowKitCustomConnectButton />
+        </div>
       </div>
-    </div>
+    </header>
   );
 };

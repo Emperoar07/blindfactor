@@ -45,7 +45,7 @@
     "next:lint": "pnpm --filter ./packages/nextjs lint",
     "next:serve": "pnpm --filter ./packages/nextjs serve",
     "precommit": "lint-staged",
-    "postinstall": "sh scripts/patch-node-tkms.sh",
+    "postinstall": "node scripts/patch-node-tkms.mjs",
     "preinstall": "pnpm sdk:build",
     "start": "pnpm --filter ./packages/nextjs dev",
     "test": "pnpm hardhat:test",

@@ -90,9 +90,28 @@
 
   body {
     min-height: 100vh;
-    font-family: "Telegraf", ui-sans-serif, system-ui, -apple-system, Segoe UI,
-      Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family:
+      "Telegraf",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Ubuntu,
+      Cantarell,
+      Noto Sans,
+      Helvetica Neue,
+      Arial,
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    color: #1f1710;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 251, 244, 0.92) 0%,
+      rgba(246, 239, 227, 0.98) 45%,
+      rgba(237, 228, 214, 1) 100%
+    );
   }
 
   h1,
@@ -106,7 +125,12 @@
 
 :root,
 [data-theme] {
-  background: var(--color-base-200);
+  background: radial-gradient(
+    circle at top,
+    rgba(255, 243, 220, 0.95),
+    rgba(238, 230, 217, 0.96) 42%,
+    rgba(230, 221, 207, 0.98) 100%
+  );
 }
 
 .btn {

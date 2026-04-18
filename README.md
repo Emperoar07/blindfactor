@@ -1,190 +1,176 @@
-# FHEVM React Template
+# BlindFactor
 
-A minimal React frontend template for building FHEVM-enabled decentralized applications (dApps). This template provides a simple development interface for interacting with FHEVM smart contracts, specifically the `FHECounter.sol` contract.
+BlindFactor is a confidential invoice financing dApp built on the Zama Protocol. It lets a borrower publish a financing workflow without exposing invoice size, minimum acceptable payout, lender bids, or repayment terms onchain.
 
-## 🚀 What is FHEVM?
+The MVP proves one complete story:
 
-FHEVM (Fully Homomorphic Encryption Virtual Machine) enables computation on encrypted data directly on Ethereum. This template demonstrates how to build dApps that can perform computations while keeping data private.
+1. borrower creates a financing request
+2. invoice amount and minimum payout are encrypted
+3. up to three lenders submit encrypted bids
+4. the contract tracks the best valid bid incrementally
+5. borrower decrypts the winner and accepts the selected lender
+6. the winning lender funds the borrower with the confidential settlement token
 
-## ✨ Features
+## Overview
 
-- **🔐 FHEVM Integration**: Built-in support for fully homomorphic encryption
-- **⚛️ React + Next.js**: Modern, performant frontend framework
-- **🎨 Tailwind CSS**: Utility-first styling for rapid UI development
-- **🔗 RainbowKit**: Seamless wallet connection and management
-- **🌐 Multi-Network Support**: Works on both Sepolia testnet and local Hardhat node
-- **📦 Monorepo Structure**: Organized packages for SDK, contracts, and frontend
+BlindFactor is designed for the Zama Developer Program Builder Track. The app focuses on a finance native use case where FHE is clearly necessary: businesses need invoice liquidity, but public chains leak commercially sensitive deal terms.
 
-## 🧰 Scripts overview
+This repo contains:
 
-| Script                   | What it does                                                   |
-| ------------------------ | -------------------------------------------------------------- |
-| `pnpm dev`              | Starts the frontend dev server for the React template.        |
-| `pnpm test`             | Runs the frontend tests in watch mode.                        |
-| `pnpm lint`             | Lints the project using the configured ESLint rules.          |
-| `pnpm build`            | Builds the production bundle for deployment.                  |
-| `pnpm preview`          | Serves the built app locally to verify the production build.  |
+1. `packages/hardhat` with the BlindFactor contracts, tests, and deploy script
+2. `packages/nextjs` with the borrower desk, lender desk, and request detail frontend
+3. `packages/fhevm-sdk` with the relayer helper hooks reused by the app
+4. `.devnotes/` local onboarding notes that stay ignored and are meant for builders only
 
-## 📋 Prerequinextjss
+## Problem
 
-Before you begin, ensure you have:
+Public smart contracts are a poor fit for invoice financing because they expose:
 
-- **Node.js** (v18 or higher)
-- **pnpm** package manager
-- **MetaMask** browser extension
-- **Git** for cloning the repository
+1. invoice size
+2. borrower financing threshold
+3. lender bids
+4. repayment terms
+5. counterparties and negotiation dynamics
 
-## 🛠️ Quick Start
+BlindFactor keeps workflow state public for coordination while keeping the money terms encrypted.
 
-### 1. Clone and Setup
+## Why FHE
+
+BlindFactor relies on FHEVM patterns that standard Solidity cannot provide safely:
+
+1. encrypted `euint64` values for request and bid terms
+2. `FHE.fromExternal` for user supplied encrypted inputs
+3. `FHE.select` for encrypted winner selection logic
+4. explicit ACL grants after every encrypted mutation
+5. user decryption through the relayer for borrower and lender specific views
+
+## Product Flow
+
+### Borrower
+
+1. opens the borrower desk
+2. encrypts `invoiceAmount` and `minPayout`
+3. creates a financing request with a due date and bidding deadline
+4. closes bidding when ready
+5. decrypts the winning bid outputs
+6. accepts the winning bid id
+7. marks the request repaid after funding
+
+### Lender
+
+1. opens the lender desk
+2. decrypts their own confidential balance
+3. submits an encrypted bid with `payoutNow` and `repaymentAtDue`
+4. decrypts only their own bid terms
+5. funds the request only if selected and accepted
+
+## Architecture
+
+High level architecture is documented in [docs/architecture.md](docs/architecture.md).
+
+Main contracts:
+
+1. `packages/hardhat/contracts/BlindFactorMarket.sol`
+2. `packages/hardhat/contracts/BlindFactorToken.sol`
+
+Main frontend entry points:
+
+1. `packages/nextjs/app/page.tsx`
+2. `packages/nextjs/app/borrower/page.tsx`
+3. `packages/nextjs/app/lender/page.tsx`
+4. `packages/nextjs/app/requests/[id]/page.tsx`
+
+Frontend contract config and hooks:
+
+1. `packages/nextjs/contracts/blindfactor.ts`
+2. `packages/nextjs/hooks/blindfactor/useBlindFactorMarket.tsx`
+3. `packages/nextjs/hooks/blindfactor/useBlindFactorEncryption.tsx`
+4. `packages/nextjs/hooks/blindfactor/useBlindFactorDecryption.tsx`
+
+## Local Setup
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd fhevm-react-template
-
-# Initialize submodules (includes fhevm-hardhat-template)
-git submodule update --init --recursive
-
-# Install dependencies
+git clone <your-blindfactor-repo-url>
+cd BlindFactor-zama
 pnpm install
+pnpm compile
+pnpm test
 ```
 
-### 2. Environment Configuration
-
-Set up your Hardhat environment variables by following the [FHEVM documentation](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional):
-
-- `MNEMONIC`: Your wallet mnemonic phrase
-- `INFURA_API_KEY`: Your Infura API key for Sepolia
-
-### 3. Start Development Environment
-
-**Option A: Local Development (Recommended for testing)**
+To run the app locally:
 
 ```bash
-# Terminal 1: Start local Hardhat node
 pnpm chain
-# RPC URL: http://127.0.0.1:8545 | Chain ID: 31337
-
-# Terminal 2: Deploy contracts to localhost
 pnpm deploy:localhost
-
-# Terminal 3: Start the frontend
 pnpm start
 ```
 
-**Option B: Sepolia Testnet**
+Notes:
+
+1. the frontend is prewired with deterministic local addresses for the default hardhat deployment path
+2. for a full funded local flow use `pnpm chain` plus `pnpm deploy:localhost`
+3. `NEXT_PUBLIC_ALCHEMY_API_KEY` is optional because the app falls back to public RPCs
+
+## Sepolia Deployment
+
+BlindFactor is wired for Sepolia as the Builder Track submission target.
+
+Deploy:
 
 ```bash
-# Deploy to Sepolia testnet
 pnpm deploy:sepolia
-
-# Start the frontend
-pnpm start
 ```
 
-### 4. Connect MetaMask
+Then set the frontend env vars:
 
-1. Open [http://localhost:3000](http://localhost:3000) in your browser
-2. Click "Connect Wallet" and select MetaMask
-3. If using localhost, add the Hardhat network to MetaMask:
-   - **Network Name**: Hardhat Local
-   - **RPC URL**: `http://127.0.0.1:8545`
-   - **Chain ID**: `31337`
-   - **Currency Symbol**: `ETH`
+1. `NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA`
+2. `NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA`
+3. optionally `NEXT_PUBLIC_ALCHEMY_API_KEY`
+4. optionally `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`
 
-### ⚠️ Common pitfalls
+## Test Status
 
-- If contracts are not found, make sure submodules are initialized with  
-  `git submodule update --init --recursive` and that you have run `pnpm install`.
-- If the frontend shows network or RPC errors, double-check that `MNEMONIC`
-  and `INFURA_API_KEY` are correctly set in your Hardhat environment.
-- If the app builds but cannot read contract state, verify that
-  `NEXT_PUBLIC_ALCHEMY_API_KEY` and `packages/nextjs/contracts/deployedContracts.ts`
-  point to the right network and deployed addresses.
+Verified in this repo:
 
-### ⚠️ Sepolia Production note
+1. `pnpm hardhat:compile`
+2. `pnpm test`
+3. `pnpm next:check-types`
+4. `pnpm next:lint`
+5. `pnpm next:build`
 
-- In production, `NEXT_PUBLIC_ALCHEMY_API_KEY` must be set (see `packages/nextjs/scaffold.config.ts`). The app throws if missing.
-- Ensure `packages/nextjs/contracts/deployedContracts.ts` points to your live contract addresses.
-- Optional: set `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID` for better WalletConnect reliability.
-- Optional: add per-chain RPCs via `rpcOverrides` in `packages/nextjs/scaffold.config.ts`.
+BlindFactor specific Hardhat tests cover:
 
-## 🔧 Troubleshooting
+1. confidential request creation
+2. lender only bid decryption
+3. incremental winner tracking
+4. borrower winner decryption
+5. acceptance, funding, and repayment flow
+6. confidential token minting and transfer behavior
 
-### Common MetaMask + Hardhat Issues
+## Demo Walkthrough
 
-When developing with MetaMask and Hardhat, you may encounter these common issues:
+The demo flow is documented in [docs/demo_walkthrough.md](docs/demo_walkthrough.md).
 
-#### ❌ Nonce Mismatch Error
+Short version:
 
-**Problem**: MetaMask tracks transaction nonces, but when you restart Hardhat, the node resets while MetaMask doesn't update its tracking.
+1. connect borrower wallet
+2. create request
+3. connect lender A and lender B
+4. submit encrypted bids
+5. borrower closes bidding
+6. borrower decrypts winning outputs and accepts the winning bid id
+7. accepted lender funds the request
 
-**Solution**:
-1. Open MetaMask extension
-2. Select the Hardhat network
-3. Go to **Settings** → **Advanced**
-4. Click **"Clear Activity Tab"** (red button)
-5. This resets MetaMask's nonce tracking
+## Pitch Prep
 
-#### ❌ Cached View Function Results
+A sample 3 minute pitch script lives in [docs/pitch_script.md](docs/pitch_script.md).
 
-**Problem**: MetaMask caches smart contract view function results. After restarting Hardhat, you may see outdated data.
+## Current Caveats
 
-**Solution**:
-1. **Restart your entire browser** (not just refresh the page)
-2. MetaMask's cache is stored in extension memory and requires a full browser restart to clear
+1. the deploy script skips demo liquidity minting on the ephemeral `hardhat` network because trivial encryption fails on that path during deployment
+2. funded local demos should use `localhost` deployment, not the one shot ephemeral hardhat deployment
+3. Sepolia frontend addresses are intentionally env driven until live deployment is finalized
 
-> 💡 **Pro Tip**: Always restart your browser after restarting Hardhat to avoid cache issues.
+## License
 
-For more details, see the [MetaMask development guide](https://docs.metamask.io/wallet/how-to/run-devnet/).
-
-## 📁 Project Structure
-
-This template uses a monorepo structure with three main packages:
-
-```
-fhevm-react-template/
-├── packages/
-│   ├── fhevm-hardhat-template/    # Smart contracts & deployment
-│   ├── fhevm-sdk/                 # FHEVM SDK package
-│   └── nextjs/                      # React frontend application
-└── scripts/                       # Build and deployment scripts
-```
-
-### Key Components
-
-#### 🔗 FHEVM Integration (`packages/nextjs/hooks/fhecounter-example/`)
-- **`useFHECounterWagmi.tsx`**: Example hook demonstrating FHEVM contract interaction
-- Essential hooks for FHEVM-enabled smart contract communication
-- Easily copyable to any FHEVM + React project
-
-#### 🎣 Wallet Management (`packages/nextjs/hooks/helper/`)
-- MetaMask wallet provider hooks
-- Compatible with EIP-6963 standard
-- Easily adaptable for other wallet providers
-
-#### 🔧 Flexibility
-- Replace `ethers.js` with `Wagmi` or other React-friendly libraries
-- Modular architecture for easy customization
-- Support for multiple wallet providers
-
-## 📚 Additional Resources
-
-### Official Documentation
-- [FHEVM Documentation](https://docs.zama.ai/protocol/solidity-guides/) - Complete FHEVM guide
-- [FHEVM Hardhat Guide](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat) - Hardhat integration
-- [Relayer SDK Documentation](https://docs.zama.ai/protocol/relayer-sdk-guides/) - SDK reference
-- [Environment Setup](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional) - MNEMONIC & API keys
-
-### Development Tools
-- [MetaMask + Hardhat Setup](https://docs.metamask.io/wallet/how-to/run-devnet/) - Local development
-- [React Documentation](https://reactjs.org/) - React framework guide
-
-### Community & Support
-- [FHEVM Discord](https://discord.com/invite/zama) - Community support
-- [GitHub Issues](https://github.com/zama-ai/fhevm-react-template/issues) - Bug reports & feature requests
-
-## 📄 License
-
-This project is licensed under the **BSD-3-Clause-Clear License**. See the [LICENSE](LICENSE) file for details.
+BSD 3 Clause Clear. See [LICENSE](LICENSE).
