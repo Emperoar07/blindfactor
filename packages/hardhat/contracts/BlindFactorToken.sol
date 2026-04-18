@@ -69,10 +69,15 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         transferred = _transfer(msg.sender, to, amount);
     }
 
-    function marketTransferFrom(address from, address to, euint64 amount) external onlyMarket returns (euint64 transferred) {
+    function marketTransferFrom(
+        address from,
+        address to,
+        euint64 amount
+    ) external onlyMarket returns (euint64 transferred, ebool success) {
         require(FHE.isAllowed(amount, msg.sender), "Unauthorized encrypted amount");
-        transferred = _transfer(from, to, amount);
+        (transferred, success) = _transferWithResult(from, to, amount);
         FHE.allowTransient(transferred, msg.sender);
+        FHE.allowTransient(success, msg.sender);
     }
 
     function _mint(address to, euint64 amount) internal returns (euint64 transferred) {
@@ -93,12 +98,20 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
     }
 
     function _transfer(address from, address to, euint64 amount) internal returns (euint64 transferred) {
+        (transferred, ) = _transferWithResult(from, to, amount);
+    }
+
+    function _transferWithResult(
+        address from,
+        address to,
+        euint64 amount
+    ) internal returns (euint64 transferred, ebool success) {
         if (to == address(0)) {
             revert BlindFactorTokenInvalidReceiver(to);
         }
 
-        ebool hasEnough = FHE.le(amount, _balances[from]);
-        transferred = FHE.select(hasEnough, amount, FHE.asEuint64(0));
+        success = FHE.le(amount, _balances[from]);
+        transferred = FHE.select(success, amount, FHE.asEuint64(0));
 
         _balances[from] = FHE.sub(_balances[from], transferred);
         _balances[to] = FHE.add(_balances[to], transferred);
@@ -110,6 +123,7 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         FHE.allowThis(transferred);
         FHE.allow(transferred, from);
         FHE.allow(transferred, to);
+        FHE.allowThis(success);
 
         emit ConfidentialTransfer(from, to);
     }

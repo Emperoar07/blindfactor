@@ -115,10 +115,10 @@ export default function DocsPage() {
               <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
                 <li>The invoice amount the borrower is financing</li>
                 <li>The minimum payout the borrower will accept</li>
-                <li>Each lender's offered payout now</li>
-                <li>Each lender's requested repayment at due date</li>
+                <li>Each lender&apos;s offered payout now</li>
+                <li>Each lender&apos;s requested repayment at due date</li>
                 <li>The winning bid id, payout, and repayment figures</li>
-                <li>Every participant's bfUSD token balance</li>
+                <li>Every participant&apos;s bfUSD token balance</li>
               </ul>
             </SubSection>
             <SubSection title="What is public">
@@ -132,7 +132,7 @@ export default function DocsPage() {
               </ul>
             </SubSection>
             <InfoBox>
-              Decryption requires a wallet signature. Only the wallet that is authorized by the contract for a given encrypted value can decrypt it. You cannot decrypt another user's bid or balance.
+              Decryption requires a wallet signature. Only the wallet that is authorized by the contract for a given encrypted value can decrypt it. You cannot decrypt another user&apos;s bid or balance.
             </InfoBox>
           </Section>
 
@@ -175,7 +175,7 @@ export default function DocsPage() {
                 <li><strong>Repayment at due date</strong> — what you expect back from the borrower at maturity</li>
               </ul>
               <p>
-                Both values are encrypted in your browser before the transaction. Other lenders cannot see your terms. The contract evaluates your bid against the current leader using FHE arithmetic and silently updates the winner if your offer is better and meets the borrower's minimum.
+                Both values are encrypted in your browser before the transaction. Other lenders cannot see your terms. The contract evaluates your bid against the current leader using FHE arithmetic and silently updates the winner if your offer is better and meets the borrower&apos;s minimum.
               </p>
             </SubSection>
             <SubSection title="Funding an accepted request">

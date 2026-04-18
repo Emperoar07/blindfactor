@@ -27,6 +27,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         RequestStatus status;
         uint32 bidCount;
         address acceptedLender;
+        bool hasValidBid;
     }
 
     struct BidMeta {
@@ -42,6 +43,8 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         euint32 winningBidId;
         euint64 winningPayout;
         euint64 winningRepaymentAtDue;
+        ebool fundingSuccess;
+        ebool repaymentSuccess;
     }
 
     struct BidPrivate {
@@ -62,6 +65,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
     error BlindFactorNoAcceptedLender(uint256 requestId);
     error BlindFactorTokenUnset();
     error BlindFactorInvalidBidId(uint32 bidId);
+    error BlindFactorNoValidBid(uint256 requestId);
 
     event RequestCreated(uint256 indexed requestId, address indexed borrower, uint64 dueAt, uint64 biddingEndsAt, bytes32 invoiceRefHash);
     event BidSubmitted(uint256 indexed requestId, uint32 indexed bidId, address indexed lender);
@@ -164,6 +168,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         FHE.allowThis(bidPrivate.repaymentAtDue);
         FHE.allow(bidPrivate.repaymentAtDue, msg.sender);
 
+        meta.hasValidBid = true;
         _updateWinningBid(requestId, bidId, meta.borrower, bidPrivate.payoutNow, bidPrivate.repaymentAtDue);
 
         emit BidSubmitted(requestId, bidId, msg.sender);
@@ -193,7 +198,10 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         if (meta.acceptedLender != address(0)) {
             revert BlindFactorNoAcceptedLender(requestId);
         }
-        if (winningBidIdClear >= meta.bidCount) {
+        if (!meta.hasValidBid) {
+            revert BlindFactorNoValidBid(requestId);
+        }
+        if (winningBidIdClear >= meta.bidCount || winningBidIdClear == INVALID_BID_ID) {
             revert BlindFactorInvalidBidId(winningBidIdClear);
         }
 
@@ -222,7 +230,11 @@ contract BlindFactorMarket is ZamaEthereumConfig {
 
         RequestPrivate storage requestPrivate = _requestPrivates[requestId];
         FHE.allowTransient(requestPrivate.winningPayout, address(settlementToken));
-        settlementToken.marketTransferFrom(msg.sender, meta.borrower, requestPrivate.winningPayout);
+        (, ebool fundingSuccess) = settlementToken.marketTransferFrom(msg.sender, meta.borrower, requestPrivate.winningPayout);
+        requestPrivate.fundingSuccess = fundingSuccess;
+        FHE.allowThis(fundingSuccess);
+        FHE.allow(fundingSuccess, meta.borrower);
+        FHE.allow(fundingSuccess, msg.sender);
 
         meta.status = RequestStatus.Funded;
         emit RequestFunded(requestId, msg.sender);
@@ -242,7 +254,11 @@ contract BlindFactorMarket is ZamaEthereumConfig {
 
         RequestPrivate storage requestPrivate = _requestPrivates[requestId];
         FHE.allowTransient(requestPrivate.winningRepaymentAtDue, address(settlementToken));
-        settlementToken.marketTransferFrom(msg.sender, meta.acceptedLender, requestPrivate.winningRepaymentAtDue);
+        (, ebool repaymentSuccess) = settlementToken.marketTransferFrom(msg.sender, meta.acceptedLender, requestPrivate.winningRepaymentAtDue);
+        requestPrivate.repaymentSuccess = repaymentSuccess;
+        FHE.allowThis(repaymentSuccess);
+        FHE.allow(repaymentSuccess, msg.sender);
+        FHE.allow(repaymentSuccess, meta.acceptedLender);
 
         meta.status = RequestStatus.Repaid;
         emit RequestRepaid(requestId, msg.sender);

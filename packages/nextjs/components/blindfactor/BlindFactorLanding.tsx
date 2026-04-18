@@ -63,7 +63,7 @@ export const BlindFactorLanding = () => {
                 </h1>
                 <p className="max-w-xl text-base leading-8 text-[#fdfaf4]/65">
                   BlindFactor lets borrowers raise working capital and lenders compete for yield without either party
-                  ever seeing the other's numbers. The math runs on encrypted values the whole way through.
+                  ever seeing the other&apos;s numbers. The math runs on encrypted values the whole way through.
                 </p>
               </div>
 

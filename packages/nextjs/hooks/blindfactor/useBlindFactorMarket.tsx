@@ -285,26 +285,37 @@ export const useBlindFactorMarket = () => {
   const loadWinningItems = useCallback(
     async (requestId: number): Promise<BlindFactorHandleItem[]> => {
       if (!marketReadContract || !marketAddress) return [];
-      try {
-        const [winningBidId, winningPayout, winningRepayment] = await Promise.all([
-          marketReadContract.getWinningBidIdHandle(BigInt(requestId)),
-          marketReadContract.getWinningPayoutHandle(BigInt(requestId)),
-          marketReadContract.getWinningRepaymentHandle(BigInt(requestId)),
-        ]);
 
-        return [
-          { key: "winningBidId", label: "Winning bid id", handle: winningBidId, contractAddress: marketAddress },
-          { key: "winningPayout", label: "Winning payout", handle: winningPayout, contractAddress: marketAddress },
-          {
+      const borrowerItems: BlindFactorHandleItem[] = await (async () => {
+        try {
+          const [winningBidId, winningPayout] = await Promise.all([
+            marketReadContract.getWinningBidIdHandle(BigInt(requestId)),
+            marketReadContract.getWinningPayoutHandle(BigInt(requestId)),
+          ]);
+          return [
+            { key: "winningBidId", label: "Winning bid id", handle: winningBidId, contractAddress: marketAddress },
+            { key: "winningPayout", label: "Winning payout", handle: winningPayout, contractAddress: marketAddress },
+          ];
+        } catch {
+          return [];
+        }
+      })();
+
+      const repaymentItem: BlindFactorHandleItem | null = await (async () => {
+        try {
+          const winningRepayment = await marketReadContract.getWinningRepaymentHandle(BigInt(requestId));
+          return {
             key: "winningRepayment",
             label: "Repayment at due date",
             handle: winningRepayment,
             contractAddress: marketAddress,
-          },
-        ];
-      } catch {
-        return [];
-      }
+          };
+        } catch {
+          return null;
+        }
+      })();
+
+      return [...borrowerItems, ...(repaymentItem ? [repaymentItem] : [])];
     },
     [marketReadContract, marketAddress],
   );
