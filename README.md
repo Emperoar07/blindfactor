@@ -64,6 +64,10 @@ BlindFactor relies on FHEVM patterns that standard Solidity cannot provide safel
 4. decrypts only their own bid terms
 5. funds the request only if selected and accepted
 
+## Frontend
+
+The UI uses a warm ivory/ink/gold design system with dark hero sections and gold FHE encryption badges. Full in-app documentation is available at `/docs` and covers borrower guides, lender guides, the settlement token, contract addresses, and legal terms.
+
 ## Architecture
 
 High level architecture is documented in [docs/architecture.md](docs/architecture.md).
@@ -79,6 +83,7 @@ Main frontend entry points:
 2. `packages/nextjs/app/borrower/page.tsx`
 3. `packages/nextjs/app/lender/page.tsx`
 4. `packages/nextjs/app/requests/[id]/page.tsx`
+5. `packages/nextjs/app/docs/page.tsx`
 
 Frontend contract config and hooks:
 
