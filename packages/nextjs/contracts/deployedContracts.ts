@@ -5,102 +5,146 @@
 import { GenericContractsDeclaration } from "~~/utils/helper/contract";
 
 const deployedContracts = {
-  31337: {
-    FHECounter: {
-      address: "0xc1b7223f08F52fbfA263c27674AE577911c3b20e",
-      abi: [
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "handle",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-          ],
-          name: "SenderNotAllowedToUseHandle",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "ZamaProtocolUnsupported",
-          type: "error",
-        },
-        {
-          inputs: [],
-          name: "confidentialProtocolId",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "externalEuint32",
-              name: "inputEuint32",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes",
-              name: "inputProof",
-              type: "bytes",
-            },
-          ],
-          name: "decrement",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getCount",
-          outputs: [
-            {
-              internalType: "euint32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "externalEuint32",
-              name: "inputEuint32",
-              type: "bytes32",
-            },
-            {
-              internalType: "bytes",
-              name: "inputProof",
-              type: "bytes",
-            },
-          ],
-          name: "increment",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {},
-      deployedOnBlock: 3,
-    },
-  },
   11155111: {
-    FHECounter: {
-      address: "0xA38F944BAb27103c262631872e2cEae3236B1d3b",
+    BlindFactorMarket: {
+      address: "0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC",
       abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "settlementToken_",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint64",
+              name: "biddingEndsAt",
+              type: "uint64",
+            },
+          ],
+          name: "BlindFactorBiddingExpired",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint64",
+              name: "biddingEndsAt",
+              type: "uint64",
+            },
+          ],
+          name: "BlindFactorBiddingStillOpen",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "BlindFactorBorrowerCannotBid",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "lender",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorDuplicateBid",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+          ],
+          name: "BlindFactorInvalidBidId",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "BlindFactorInvalidDeadline",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "BlindFactorInvalidRequest",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "enum BlindFactorMarket.RequestStatus",
+              name: "status",
+              type: "uint8",
+            },
+          ],
+          name: "BlindFactorInvalidStatus",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "BlindFactorNoAcceptedLender",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "caller",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorNotAcceptedLender",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "caller",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorNotBorrower",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "BlindFactorTokenUnset",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "BlindFactorTooManyBids",
+          type: "error",
+        },
         {
           inputs: [
             {
@@ -123,6 +167,188 @@ const deployedContracts = {
           type: "error",
         },
         {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "lender",
+              type: "address",
+            },
+          ],
+          name: "BidSubmitted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "BiddingClosed",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "borrower",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint64",
+              name: "dueAt",
+              type: "uint64",
+            },
+            {
+              indexed: false,
+              internalType: "uint64",
+              name: "biddingEndsAt",
+              type: "uint64",
+            },
+            {
+              indexed: false,
+              internalType: "bytes32",
+              name: "invoiceRefHash",
+              type: "bytes32",
+            },
+          ],
+          name: "RequestCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "lender",
+              type: "address",
+            },
+          ],
+          name: "RequestFunded",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "borrower",
+              type: "address",
+            },
+          ],
+          name: "RequestRepaid",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "lender",
+              type: "address",
+            },
+          ],
+          name: "WinningBidAccepted",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "MAX_BIDS_PER_REQUEST",
+          outputs: [
+            {
+              internalType: "uint32",
+              name: "",
+              type: "uint32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint32",
+              name: "winningBidIdClear",
+              type: "uint32",
+            },
+          ],
+          name: "acceptWinningBid",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "closeBidding",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
           inputs: [],
           name: "confidentialProtocolId",
           outputs: [
@@ -138,8 +364,13 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "externalEuint32",
-              name: "inputEuint32",
+              internalType: "externalEuint64",
+              name: "encInvoiceAmount",
+              type: "bytes32",
+            },
+            {
+              internalType: "externalEuint64",
+              name: "encMinPayout",
               type: "bytes32",
             },
             {
@@ -147,15 +378,239 @@ const deployedContracts = {
               name: "inputProof",
               type: "bytes",
             },
+            {
+              internalType: "uint64",
+              name: "dueAt",
+              type: "uint64",
+            },
+            {
+              internalType: "uint64",
+              name: "biddingEndsAt",
+              type: "uint64",
+            },
+            {
+              internalType: "bytes32",
+              name: "invoiceRefHash",
+              type: "bytes32",
+            },
           ],
-          name: "decrement",
+          name: "createRequest",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "fundAcceptedRequest",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
         {
-          inputs: [],
-          name: "getCount",
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+          ],
+          name: "getBidMeta",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "lender",
+                  type: "address",
+                },
+                {
+                  internalType: "uint32",
+                  name: "requestId",
+                  type: "uint32",
+                },
+                {
+                  internalType: "bool",
+                  name: "exists",
+                  type: "bool",
+                },
+                {
+                  internalType: "bool",
+                  name: "accepted",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct BlindFactorMarket.BidMeta",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "lender",
+              type: "address",
+            },
+          ],
+          name: "getLenderBidId",
+          outputs: [
+            {
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+            {
+              internalType: "bool",
+              name: "exists",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint32",
+              name: "bidId",
+              type: "uint32",
+            },
+          ],
+          name: "getOwnBidHandles",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "payoutNow",
+              type: "bytes32",
+            },
+            {
+              internalType: "euint64",
+              name: "repaymentAtDue",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "getRequestMeta",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "borrower",
+                  type: "address",
+                },
+                {
+                  internalType: "uint64",
+                  name: "dueAt",
+                  type: "uint64",
+                },
+                {
+                  internalType: "uint64",
+                  name: "biddingEndsAt",
+                  type: "uint64",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "invoiceRefHash",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "enum BlindFactorMarket.RequestStatus",
+                  name: "status",
+                  type: "uint8",
+                },
+                {
+                  internalType: "uint32",
+                  name: "bidCount",
+                  type: "uint32",
+                },
+                {
+                  internalType: "address",
+                  name: "acceptedLender",
+                  type: "address",
+                },
+              ],
+              internalType: "struct BlindFactorMarket.RequestMeta",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "getRequestPrivateHandles",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "invoiceAmount",
+              type: "bytes32",
+            },
+            {
+              internalType: "euint64",
+              name: "minPayout",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "getWinningBidIdHandle",
           outputs: [
             {
               internalType: "euint32",
@@ -169,8 +624,95 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "externalEuint32",
-              name: "inputEuint32",
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "getWinningPayoutHandle",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "getWinningRepaymentHandle",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+          ],
+          name: "markRepaid",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "nextRequestId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "settlementToken",
+          outputs: [
+            {
+              internalType: "contract BlindFactorToken",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "requestId",
+              type: "uint256",
+            },
+            {
+              internalType: "externalEuint64",
+              name: "encPayoutNow",
+              type: "bytes32",
+            },
+            {
+              internalType: "externalEuint64",
+              name: "encRepaymentAtDue",
               type: "bytes32",
             },
             {
@@ -179,14 +721,471 @@ const deployedContracts = {
               type: "bytes",
             },
           ],
-          name: "increment",
+          name: "submitBid",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 10333830,
+      deployedOnBlock: 10684022,
+    },
+    BlindFactorToken: {
+      address: "0x086eb01D2983b7E4bbB7A1EF519d741FBd350038",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner_",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "tokenURI_",
+              type: "string",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "market",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorTokenInvalidMarket",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "receiver",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorTokenInvalidReceiver",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "caller",
+              type: "address",
+            },
+          ],
+          name: "BlindFactorTokenUnauthorizedMarket",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "handle",
+              type: "bytes32",
+            },
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "SenderNotAllowedToUseHandle",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "ZamaProtocolUnsupported",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+          ],
+          name: "ConfidentialTransfer",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "market",
+              type: "address",
+            },
+          ],
+          name: "MarketSet",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferStarted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "acceptOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "confidentialBalanceOf",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "confidentialProtocolId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "confidentialTotalSupply",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "externalEuint64",
+              name: "encryptedAmount",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes",
+              name: "inputProof",
+              type: "bytes",
+            },
+          ],
+          name: "confidentialTransfer",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "transferred",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "euint64",
+              name: "amount",
+              type: "bytes32",
+            },
+          ],
+          name: "confidentialTransfer",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "transferred",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "decimals",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "market",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "euint64",
+              name: "amount",
+              type: "bytes32",
+            },
+          ],
+          name: "marketTransferFrom",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "transferred",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint64",
+              name: "amount",
+              type: "uint64",
+            },
+          ],
+          name: "mint",
+          outputs: [
+            {
+              internalType: "euint64",
+              name: "transferred",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "name",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "pendingOwner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "market_",
+              type: "address",
+            },
+          ],
+          name: "setMarket",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "symbol",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "tokenURI",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        acceptOwnership: "@openzeppelin/contracts/access/Ownable2Step.sol",
+        owner: "@openzeppelin/contracts/access/Ownable2Step.sol",
+        pendingOwner: "@openzeppelin/contracts/access/Ownable2Step.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable2Step.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable2Step.sol",
+      },
+      deployedOnBlock: 10684021,
     },
   },
 } as const;

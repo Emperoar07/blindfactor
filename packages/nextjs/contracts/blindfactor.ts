@@ -167,6 +167,11 @@ const LOCAL_DEFAULTS: BlindFactorDeployment = {
   tokenAddress: "0x23f51eAa3274c4051D9B0c28143778f8DfAa10CE",
 };
 
+const SEPOLIA_DEFAULTS: BlindFactorDeployment = {
+  marketAddress: "0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC",
+  tokenAddress: "0x086eb01D2983b7E4bbB7A1EF519d741FBd350038",
+};
+
 export const getBlindFactorDeployment = (chainId?: number): BlindFactorDeployment => {
   if (chainId === 31337) {
     return {
@@ -179,8 +184,12 @@ export const getBlindFactorDeployment = (chainId?: number): BlindFactorDeploymen
 
   if (chainId === 11155111) {
     return {
-      marketAddress: process.env.NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA as `0x${string}` | undefined,
-      tokenAddress: process.env.NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA as `0x${string}` | undefined,
+      marketAddress:
+        (process.env.NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA as `0x${string}` | undefined) ??
+        SEPOLIA_DEFAULTS.marketAddress,
+      tokenAddress:
+        (process.env.NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA as `0x${string}` | undefined) ??
+        SEPOLIA_DEFAULTS.tokenAddress,
     };
   }
 

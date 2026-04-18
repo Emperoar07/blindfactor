@@ -128,6 +128,13 @@ Then set the frontend env vars:
 3. optionally `NEXT_PUBLIC_ALCHEMY_API_KEY`
 4. optionally `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`
 
+Current live Sepolia deployment:
+
+1. `BlindFactorMarket`: `0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC`
+2. `BlindFactorToken`: `0x086eb01D2983b7E4bbB7A1EF519d741FBd350038`
+
+The frontend now falls back to these deployed Sepolia addresses by default and still allows env overrides when needed.
+
 ## Test Status
 
 Verified in this repo:
