@@ -3,97 +3,142 @@
 import Link from "next/link";
 import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
-const MetricCard = ({ title, value, copy }: { title: string; value: string; copy: string }) => (
-  <div className="rounded-[2rem] border border-white/30 bg-white/70 p-5 shadow-[0_20px_70px_rgba(42,27,8,0.10)] backdrop-blur">
-    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500">{title}</p>
-    <p className="mt-3 text-3xl font-semibold text-stone-900">{value}</p>
-    <p className="mt-2 text-sm leading-6 text-stone-600">{copy}</p>
+const HowItWorksStep = ({
+  step,
+  title,
+  body,
+  accent,
+}: {
+  step: string;
+  title: string;
+  body: string;
+  accent: string;
+}) => (
+  <div className="group relative overflow-hidden rounded-2xl border border-[rgba(180,165,140,0.25)] bg-white/80 p-6 transition hover:shadow-lg hover:-translate-y-0.5">
+    <div
+      className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold ${accent}`}
+    >
+      {step}
+    </div>
+    <h3 className="text-lg font-bold text-[#0f1117]">{title}</h3>
+    <p className="mt-2 text-sm leading-relaxed text-[#7a6f63]">{body}</p>
+  </div>
+);
+
+const StatPill = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex flex-col items-center gap-1 rounded-2xl bg-white/10 border border-white/15 px-5 py-4 backdrop-blur-sm">
+    <span className="text-2xl font-bold text-[#fdfaf4]">{value}</span>
+    <span className="text-xs font-semibold uppercase tracking-[0.25em] text-[#fdfaf4]/60">{label}</span>
   </div>
 );
 
 export const BlindFactorLanding = () => {
   const { requests, chainId, networkWarning } = useBlindFactorMarket();
 
+  const openCount = requests.filter(r => r.status === 0).length;
+  const totalCount = requests.length;
+
   return (
-    <div className="w-full">
-      <section className="overflow-hidden rounded-[2.5rem] border border-stone-200 bg-[radial-gradient(circle_at_top_left,_rgba(255,243,220,0.95),_rgba(232,225,213,0.95)_45%,_rgba(216,204,182,0.9)_100%)] p-8 shadow-[0_30px_120px_rgba(65,44,15,0.12)] md:p-12">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-stone-500">BlindFactor</p>
-            <div className="space-y-4">
-              <h1 className="max-w-4xl text-5xl font-semibold leading-[1.05] text-stone-950 md:text-6xl">
-                Private invoice financing for onchain business cash flow.
-              </h1>
-              <p className="max-w-2xl text-base leading-8 text-stone-700">
-                BlindFactor lets a borrower publish financing workflow without exposing invoice size, minimum acceptable
-                payout, lender bids, or repayment terms. The chain verifies the market. FHE keeps the economics sealed.
-              </p>
+    <div className="w-full space-y-8">
+      <section className="relative overflow-hidden rounded-[2rem] bg-[#0f1117]">
+        <div className="absolute inset-0 opacity-30"
+          style={{
+            background: "radial-gradient(ellipse at 20% 50%, #e8a825 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, #2d7a5f 0%, transparent 40%)",
+          }}
+        />
+        <div className="relative px-8 py-14 md:px-14 md:py-20">
+          <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr]">
+            <div className="space-y-7">
+              <div className="flex items-center gap-3">
+                <span className="bf-encrypt-badge">
+                  <span className="bf-lock-dot" />
+                  Powered by Zama FHEVM
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                <h1 className="text-5xl font-bold leading-[1.08] text-[#fdfaf4] md:text-6xl">
+                  Invoice financing.{" "}
+                  <span className="text-[#e8a825]">Completely confidential.</span>
+                </h1>
+                <p className="max-w-xl text-base leading-8 text-[#fdfaf4]/65">
+                  BlindFactor lets borrowers raise working capital and lenders compete for yield without either party
+                  ever seeing the other's numbers. The math runs on encrypted values the whole way through.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link href="/borrower" className="bf-btn-gold">
+                  I need financing
+                </Link>
+                <Link
+                  href="/lender"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-[#fdfaf4] transition hover:border-[#e8a825] hover:text-[#e8a825]"
+                >
+                  I want to lend
+                </Link>
+              </div>
+
+              {networkWarning ? (
+                <p className="rounded-xl bg-[#e8a825]/15 border border-[#e8a825]/30 px-4 py-3 text-sm text-[#e8a825]">
+                  {networkWarning}
+                </p>
+              ) : null}
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/borrower"
-                className="inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-700"
-              >
-                Open borrower desk
-              </Link>
-              <Link
-                href="/lender"
-                className="inline-flex items-center justify-center rounded-full border border-stone-950 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-stone-950 hover:text-stone-50"
-              >
-                Open lender desk
-              </Link>
+            <div className="flex flex-col justify-center gap-4">
+              <div className="grid grid-cols-2 gap-3">
+                <StatPill label="Live requests" value={String(openCount)} />
+                <StatPill label="Total rounds" value={String(totalCount)} />
+                <StatPill label="Settlement" value="bfUSD" />
+                <StatPill label="Chain" value={chainId === 11155111 ? "Sepolia" : chainId === 31337 ? "Local" : "..."} />
+              </div>
+              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#fdfaf4]/40 mb-2">FHE guarantee</p>
+                <p className="text-sm leading-6 text-[#fdfaf4]/60">
+                  Invoice amounts, bid terms, and repayment figures are sealed on chain. The winning bid is computed homomorphically. Neither party sees what they should not see.
+                </p>
+              </div>
             </div>
-
-            {networkWarning ? (
-              <p className="rounded-3xl bg-white/70 px-4 py-3 text-sm text-amber-900">{networkWarning}</p>
-            ) : null}
-          </div>
-
-          <div className="grid gap-4">
-            <MetricCard
-              title="Live requests"
-              value={String(requests.length)}
-              copy="Borrower workflow is public. Terms are decrypted only by authorized wallets."
-            />
-            <MetricCard
-              title="Network"
-              value={chainId ? String(chainId) : "No wallet"}
-              copy="Local hardhat is prewired for builder testing. Sepolia addresses can be injected through environment variables."
-            />
-            <MetricCard
-              title="Settlement rail"
-              value="bfUSD"
-              copy="Winning lender funding and borrower repayment move through a confidential settlement token."
-            />
           </div>
         </div>
       </section>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-[2rem] border border-stone-200 bg-white p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">1. Borrower request</p>
-          <h2 className="mt-3 text-2xl font-semibold text-stone-900">Public coordination, encrypted terms</h2>
-          <p className="mt-3 text-sm leading-7 text-stone-600">
-            The borrower creates a request with encrypted invoice amount and minimum acceptable payout while keeping due
-            date and request status visible.
-          </p>
-        </div>
-        <div className="rounded-[2rem] border border-stone-200 bg-white p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">2. Lender bids</p>
-          <h2 className="mt-3 text-2xl font-semibold text-stone-900">Incremental winner tracking</h2>
-          <p className="mt-3 text-sm leading-7 text-stone-600">
-            Up to three lenders submit encrypted bids. BlindFactor updates the best valid payout privately as each bid
-            arrives.
-          </p>
-        </div>
-        <div className="rounded-[2rem] border border-stone-200 bg-white p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">3. Funding</p>
-          <h2 className="mt-3 text-2xl font-semibold text-stone-900">Decrypt, accept, and fund</h2>
-          <p className="mt-3 text-sm leading-7 text-stone-600">
-            The borrower decrypts the winner, accepts the selected lender, and the accepted lender funds the request
-            with the confidential settlement token.
-          </p>
+      <section className="grid gap-4 md:grid-cols-3">
+        <HowItWorksStep
+          step="01"
+          title="Borrower posts encrypted request"
+          body="The borrower submits their invoice value and minimum acceptable payout under FHE encryption. The due date and request status are public. The economics are not."
+          accent="bg-[#fdf4dc] text-[#7a4f00]"
+        />
+        <HowItWorksStep
+          step="02"
+          title="Lenders bid without seeing rivals"
+          body="Up to three lenders submit encrypted bids. The contract evaluates each bid homomorphically and silently updates the leading offer as bids arrive."
+          accent="bg-[#d4ede6] text-[#1a5c45]"
+        />
+        <HowItWorksStep
+          step="03"
+          title="Borrower decrypts, accepts, and gets funded"
+          body="When bidding closes the borrower decrypts the winner privately, accepts the lender on chain, and the selected lender sends a confidential settlement transfer."
+          accent="bg-[#0f1117] text-[#e8a825]"
+        />
+      </section>
+
+      <section className="rounded-2xl border border-[rgba(180,165,140,0.25)] bg-white/60 p-7">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="bf-label">Ready to participate?</p>
+            <h2 className="mt-1 text-2xl font-bold text-[#0f1117]">Pick your role and connect a wallet</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/borrower" className="bf-btn-primary">
+              Open borrower desk
+            </Link>
+            <Link href="/lender" className="bf-btn-outline">
+              Open lender desk
+            </Link>
+          </div>
         </div>
       </section>
     </div>

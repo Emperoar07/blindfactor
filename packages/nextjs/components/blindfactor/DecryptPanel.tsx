@@ -4,6 +4,45 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import { type BlindFactorDecryptItem, useBlindFactorDecryption } from "~~/hooks/blindfactor/useBlindFactorDecryption";
 
+const DecryptValueTile = ({
+  label,
+  handle,
+  value,
+}: {
+  label: string;
+  handle: string;
+  value: string | bigint | boolean | undefined;
+}) => {
+  const decrypted = typeof value !== "undefined";
+  return (
+    <div
+      className={`rounded-xl border p-4 transition ${
+        decrypted
+          ? "border-[#a8d9cc] bg-[#d4ede6]/40"
+          : "border-[rgba(180,165,140,0.25)] bg-[#fdfaf4]"
+      }`}
+    >
+      <p className="bf-label mb-1">{label}</p>
+      <p className="font-mono text-[10px] text-[#7a6f63] break-all leading-relaxed">
+        {handle.slice(0, 18)}...{handle.slice(-6)}
+      </p>
+      <div className="mt-2 flex items-center gap-2">
+        {decrypted ? (
+          <>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2d7a5f]" />
+            <span className="text-base font-bold text-[#0f1117]">{String(value)}</span>
+          </>
+        ) : (
+          <>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#ddd5c5]" />
+            <span className="text-sm text-[#7a6f63]">Waiting for decryption</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const DecryptPanel = ({
   title,
   description,
@@ -33,57 +72,79 @@ export const DecryptPanel = ({
     setItems(nextItems);
     setLoadMessage(
       nextItems.length > 0
-        ? "Encrypted handles loaded for this wallet."
-        : "No decryptable values are available for this wallet.",
+        ? `${nextItems.length} encrypted handle${nextItems.length > 1 ? "s" : ""} loaded for your wallet.`
+        : "No decryptable values are available for this wallet on this request.",
     );
   };
 
+  const hasResults = items.length > 0 && Object.keys(valuesByKey).some(k => typeof valuesByKey[k] !== "undefined");
+
   return (
-    <section className="rounded-3xl border border-stone-200 bg-stone-50/80 p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-1">
-          <h4 className="text-lg font-semibold text-stone-900">{title}</h4>
-          <p className="text-sm leading-6 text-stone-600">{description}</p>
+    <div className="overflow-hidden rounded-2xl border border-[rgba(180,165,140,0.3)] bg-white">
+      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-5 py-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h4 className="text-base font-bold text-[#0f1117]">{title}</h4>
+            <p className="mt-0.5 text-xs leading-relaxed text-[#7a6f63]">{description}</p>
+          </div>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleLoad}
+              className="bf-btn-outline text-xs px-4 py-2"
+            >
+              Load handles
+            </button>
+            <button
+              type="button"
+              onClick={decrypt}
+              disabled={!canDecrypt}
+              className="bf-btn-primary text-xs px-4 py-2"
+            >
+              {isDecrypting ? "Decrypting..." : "Decrypt"}
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={handleLoad}
-            className="rounded-full border border-stone-900 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-900 hover:text-stone-50"
-          >
-            Load handles
-          </button>
-          <button
-            type="button"
-            onClick={decrypt}
-            disabled={!canDecrypt}
-            className="rounded-full bg-stone-900 px-4 py-2 text-sm font-semibold text-stone-50 transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isDecrypting ? "Decrypting..." : "Decrypt values"}
-          </button>
-        </div>
+        {loadMessage && (
+          <p className="mt-2 text-xs text-[#7a6f63] bg-[#fdf4dc] border border-[#f0cc80] rounded-lg px-3 py-2">
+            {loadMessage}
+          </p>
+        )}
+        {message && !error && (
+          <p className="mt-2 text-xs text-[#1a5c45]">{message}</p>
+        )}
+        {error && (
+          <p className="mt-2 text-xs text-[#9b2c2c] bg-[#f4e4e4] border border-[#e8b4b4] rounded-lg px-3 py-2">
+            {error}
+          </p>
+        )}
       </div>
 
-      {loadMessage ? <p className="mt-3 text-sm text-stone-600">{loadMessage}</p> : null}
-      {message ? <p className="mt-2 text-sm text-stone-600">{message}</p> : null}
-      {error ? <p className="mt-2 text-sm text-rose-700">{error}</p> : null}
-
       {items.length > 0 ? (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          {items.map(item => (
-            <div key={item.key} className="rounded-3xl border border-stone-200 bg-white p-4">
-              <p className="text-xs uppercase tracking-[0.25em] text-stone-500">{item.label}</p>
-              <p className="mt-2 break-all font-mono text-xs text-stone-600">{item.handle}</p>
-              <p className="mt-3 text-sm font-semibold text-stone-900">
-                {typeof valuesByKey[item.key] === "undefined"
-                  ? "Waiting for user decryption"
-                  : String(valuesByKey[item.key])}
-              </p>
+        <div className="px-5 py-4">
+          {hasResults && (
+            <div className="mb-3 flex items-center gap-2 rounded-lg bg-[#d4ede6] border border-[#a8d9cc] px-3 py-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#2d7a5f]" />
+              <span className="text-xs font-semibold text-[#1a5c45]">Decryption complete</span>
             </div>
-          ))}
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {items.map(item => (
+              <DecryptValueTile
+                key={item.key}
+                label={item.label}
+                handle={item.handle}
+                value={valuesByKey[item.key]}
+              />
+            ))}
+          </div>
         </div>
-      ) : null}
-    </section>
+      ) : (
+        <div className="px-5 py-6 text-center">
+          <p className="text-xs text-[#7a6f63]">Load handles to see encrypted values for this wallet</p>
+        </div>
+      )}
+    </div>
   );
 };

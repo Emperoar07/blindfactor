@@ -3,9 +3,6 @@
 import { FormEvent, useState } from "react";
 import { SubmitBidPayload } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
-const inputClass =
-  "mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-900";
-
 export const SubmitBidForm = ({
   requestId,
   disabled,
@@ -30,35 +27,49 @@ export const SubmitBidForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-3xl border border-stone-200 bg-stone-50/90 p-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="text-sm text-stone-700">
-          Payout now
-          <input
-            className={inputClass}
-            inputMode="numeric"
-            value={payoutNow}
-            onChange={event => setPayoutNow(event.target.value)}
-          />
-        </label>
-        <label className="text-sm text-stone-700">
-          Repayment at due date
-          <input
-            className={inputClass}
-            inputMode="numeric"
-            value={repaymentAtDue}
-            onChange={event => setRepaymentAtDue(event.target.value)}
-          />
-        </label>
+    <div className="overflow-hidden rounded-2xl border border-[rgba(180,165,140,0.3)] bg-white">
+      <div className="flex items-center justify-between border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-5 py-3.5">
+        <div className="flex items-center gap-2">
+          <span className="bf-encrypt-badge">
+            <span className="bf-lock-dot" />
+            Encrypted bid
+          </span>
+        </div>
+        <p className="text-xs text-[#7a6f63]">Your numbers stay private from all other participants</p>
       </div>
 
-      <button
-        type="submit"
-        disabled={disabled || isPending}
-        className="mt-4 inline-flex items-center justify-center rounded-full border border-stone-900 px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-900 hover:text-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isPending ? "Submitting encrypted bid..." : "Submit encrypted bid"}
-      </button>
-    </form>
+      <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block space-y-1.5">
+            <span className="bf-label">Payout now (bfUSD)</span>
+            <p className="text-xs text-[#7a6f63]">Amount you will send the borrower upfront</p>
+            <input
+              className="bf-input"
+              inputMode="numeric"
+              value={payoutNow}
+              onChange={e => setPayoutNow(e.target.value)}
+            />
+          </label>
+          <label className="block space-y-1.5">
+            <span className="bf-label">Repayment at due date (bfUSD)</span>
+            <p className="text-xs text-[#7a6f63]">Amount the borrower sends back to you at maturity</p>
+            <input
+              className="bf-input"
+              inputMode="numeric"
+              value={repaymentAtDue}
+              onChange={e => setRepaymentAtDue(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={disabled || isPending}
+          className="bf-btn-primary w-full"
+        >
+          {isPending ? "Encrypting and submitting bid..." : "Submit encrypted bid"}
+        </button>
+      </form>
+    </div>
   );
 };

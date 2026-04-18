@@ -2,79 +2,54 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 @theme {
   --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
   --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  --color-ink: #0f1117;
+  --color-ink-soft: #1e2433;
+  --color-gold: #e8a825;
+  --color-gold-light: #f5cc6a;
+  --color-gold-pale: #fdf4dc;
+  --color-sage: #2d7a5f;
+  --color-sage-light: #d4ede6;
+  --color-rose-soft: #f4e4e4;
+  --color-rose-deep: #9b2c2c;
+  --color-parchment: #fdfaf4;
+  --color-parchment-deep: #f5efe0;
+  --color-mist: #f0eee9;
+  --color-stone-warm: #7a6f63;
 }
 
 @plugin "daisyui" {
-  themes:
-    light,
-    dark --prefersdark;
+  themes: light;
 }
 
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #93bbfb;
-  --color-primary-content: #212638;
-  --color-secondary: #dae8ff;
-  --color-secondary-content: #212638;
-  --color-accent: #93bbfb;
-  --color-accent-content: #212638;
-  --color-neutral: #212638;
-  --color-neutral-content: #ffffff;
-  --color-base-100: #e8e8e8;
-  --color-base-200: #e8e8e8;
-  --color-base-300: #e8e8e8;
-  --color-base-content: #212638;
-  --color-info: #93bbfb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-primary: #0f1117;
+  --color-primary-content: #fdfaf4;
+  --color-secondary: #e8a825;
+  --color-secondary-content: #0f1117;
+  --color-accent: #2d7a5f;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1e2433;
+  --color-neutral-content: #fdfaf4;
+  --color-base-100: #fdfaf4;
+  --color-base-200: #f5efe0;
+  --color-base-300: #ede5d4;
+  --color-base-content: #0f1117;
+  --color-info: #3b6fa0;
+  --color-success: #2d7a5f;
+  --color-warning: #e8a825;
+  --color-error: #9b2c2c;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.5rem;
   --tt-tailw: 6px;
 }
 
-@plugin "daisyui/theme" {
-  name: "dark";
-
-  --color-primary: #212638;
-  --color-primary-content: #f9fbff;
-  --color-secondary: #323f61;
-  --color-secondary-content: #f9fbff;
-  --color-accent: #4969a6;
-  --color-accent-content: #f9fbff;
-  --color-neutral: #f9fbff;
-  --color-neutral-content: #385183;
-  --color-base-100: #b7791f;
-  --color-base-200: #975a16;
-  --color-base-300: #744210;
-  --color-base-content: #f9fbff;
-  --color-info: #385183;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
-
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-
-  --tt-tailw: 6px;
-  --tt-bg: var(--color-primary);
-}
-
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -85,7 +60,7 @@
   }
 
   p {
-    margin: 1rem 0;
+    margin: 0.75rem 0;
   }
 
   body {
@@ -105,36 +80,23 @@
       "Apple Color Emoji",
       "Segoe UI Emoji",
       "Segoe UI Symbol";
-    color: #1f1710;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 251, 244, 0.92) 0%,
-      rgba(246, 239, 227, 0.98) 45%,
-      rgba(237, 228, 214, 1) 100%
-    );
+    color: #0f1117;
+    background-color: #fdfaf4;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
     margin-bottom: 0.5rem;
-    line-height: 1;
+    line-height: 1.1;
   }
 }
 
 :root,
 [data-theme] {
-  background: radial-gradient(
-    circle at top,
-    rgba(255, 243, 220, 0.95),
-    rgba(238, 230, 217, 0.96) 42%,
-    rgba(230, 221, 207, 0.98) 100%
-  );
+  background-color: #fdfaf4;
 }
 
 .btn {
-  @apply shadow-md;
+  @apply shadow-sm;
 }
 
 .btn.btn-ghost {
@@ -147,4 +109,152 @@
 
 .link:hover {
   opacity: 80%;
+}
+
+/* BlindFactor design tokens */
+.bf-card {
+  background: rgba(255, 252, 245, 0.92);
+  border: 1px solid rgba(180, 165, 140, 0.3);
+  border-radius: 1.75rem;
+  box-shadow: 0 4px 24px rgba(15, 17, 23, 0.06), 0 1px 4px rgba(15, 17, 23, 0.04);
+}
+
+.bf-card-hero {
+  background: linear-gradient(135deg, #0f1117 0%, #1e2433 60%, #252d40 100%);
+  border-radius: 1.75rem;
+}
+
+.bf-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1.5px solid #ddd5c5;
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  color: #0f1117;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.bf-input:focus {
+  border-color: #e8a825;
+  box-shadow: 0 0 0 3px rgba(232, 168, 37, 0.12);
+}
+
+.bf-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  background: #0f1117;
+  color: #fdfaf4;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.bf-btn-primary:hover:not(:disabled) {
+  background: #e8a825;
+  color: #0f1117;
+  transform: translateY(-1px);
+}
+
+.bf-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bf-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: #0f1117;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1.5px solid #0f1117;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+
+.bf-btn-outline:hover:not(:disabled) {
+  background: #0f1117;
+  color: #fdfaf4;
+  transform: translateY(-1px);
+}
+
+.bf-btn-outline:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bf-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  background: #e8a825;
+  color: #0f1117;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  transition: background 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+
+.bf-btn-gold:hover:not(:disabled) {
+  background: #f5cc6a;
+  transform: translateY(-1px);
+}
+
+.bf-btn-gold:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.bf-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #7a6f63;
+}
+
+.bf-stat-tile {
+  background: rgba(255, 252, 245, 0.8);
+  border: 1px solid rgba(180, 165, 140, 0.25);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.bf-encrypt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: #fdf4dc;
+  border: 1px solid #e8a825;
+  color: #7a4f00;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.bf-lock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #e8a825;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

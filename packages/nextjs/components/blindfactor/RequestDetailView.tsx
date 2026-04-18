@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { DecryptPanel } from "./DecryptPanel";
 import { FundingActionPanel } from "./FundingActionPanel";
 import { RequestCard } from "./RequestCard";
@@ -15,12 +16,25 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
 
   if (!request) {
     return (
-      <section className="rounded-[2rem] border border-stone-200 bg-white p-8">
-        <h1 className="text-3xl font-semibold text-stone-900">Request room</h1>
-        <p className="mt-3 text-sm leading-7 text-stone-600">
-          The request is not available on the currently selected network.
+      <div className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)] p-8">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#7a6f63] hover:text-[#0f1117] mb-5">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          Back to overview
+        </Link>
+        <h1 className="text-2xl font-bold text-[#0f1117]">Request room</h1>
+        <p className="mt-2 text-sm text-[#7a6f63]">
+          This request is not available on the currently selected network or has not loaded yet.
         </p>
-      </section>
+        <button
+          type="button"
+          onClick={blindFactor.refresh}
+          className="mt-4 bf-btn-primary text-sm px-5 py-2.5"
+        >
+          Refresh
+        </button>
+      </div>
     );
   }
 
@@ -29,11 +43,42 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#7a6f63] hover:text-[#0f1117]">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          Back to overview
+        </Link>
+        <button
+          type="button"
+          onClick={blindFactor.refresh}
+          className="bf-btn-outline text-sm px-4 py-2"
+        >
+          Refresh
+        </button>
+      </div>
+
       {blindFactor.activityMessage ? (
-        <div className="rounded-3xl border border-stone-200 bg-white px-5 py-4 text-sm text-stone-700">
-          {blindFactor.activityMessage}
+        <div className="flex items-center gap-3 rounded-xl border border-[rgba(180,165,140,0.3)] bg-white px-5 py-3.5">
+          <span className="h-2 w-2 rounded-full bg-[#e8a825] animate-pulse" />
+          <p className="text-sm text-[#0f1117]">{blindFactor.activityMessage}</p>
         </div>
       ) : null}
+
+      {isBorrower && (
+        <div className="flex items-center gap-2.5 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#e8a825]" />
+          <p className="text-xs font-semibold text-[#7a4f00]">You are the borrower on this request</p>
+        </div>
+      )}
+
+      {isAcceptedLender && (
+        <div className="flex items-center gap-2.5 rounded-xl bg-[#d4ede6] border border-[#a8d9cc] px-4 py-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#2d7a5f]" />
+          <p className="text-xs font-semibold text-[#1a5c45]">You are the accepted lender on this request</p>
+        </div>
+      )}
 
       <RequestCard request={request}>
         {request.status === 0 && !isBorrower && !request.hasMyBid ? (
@@ -65,8 +110,8 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
 
         <div className="grid gap-4 xl:grid-cols-2">
           <DecryptPanel
-            title="Borrower request terms"
-            description="This panel resolves only for the borrower wallet that created the request."
+            title="Request terms"
+            description="Invoice amount and minimum payout. Resolves only for the borrower wallet that created this request."
             instance={blindFactor.instance}
             ethersSigner={blindFactor.ethersSigner}
             chainId={blindFactor.chainId}
@@ -74,7 +119,7 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
           />
           <DecryptPanel
             title="Winning outputs"
-            description="Borrower and selected lender can decrypt the winner related values they are authorized to see."
+            description="Borrower and accepted lender can decrypt the values they are authorized to see after bidding closes."
             instance={blindFactor.instance}
             ethersSigner={blindFactor.ethersSigner}
             chainId={blindFactor.chainId}
@@ -85,7 +130,7 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
         {request.hasMyBid && typeof request.myBidId === "number" ? (
           <DecryptPanel
             title="My lender bid"
-            description="This panel is available only for the lender that submitted the bid."
+            description="The payout now and repayment at due date that you submitted. Private to your wallet only."
             instance={blindFactor.instance}
             ethersSigner={blindFactor.ethersSigner}
             chainId={blindFactor.chainId}

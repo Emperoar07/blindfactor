@@ -3,9 +3,30 @@
 import { FormEvent, useState } from "react";
 import { CreateRequestPayload } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
-const labelClass = "text-xs font-semibold uppercase tracking-[0.25em] text-stone-500";
-const inputClass =
-  "mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-900";
+const Field = ({
+  label,
+  hint,
+  value,
+  onChange,
+  inputMode,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (v: string) => void;
+  inputMode?: "numeric" | "text";
+}) => (
+  <label className="block space-y-1.5">
+    <span className="bf-label">{label}</span>
+    {hint && <span className="block text-xs text-[#7a6f63]">{hint}</span>}
+    <input
+      className="bf-input"
+      inputMode={inputMode ?? "text"}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
+  </label>
+);
 
 export const CreateRequestForm = ({
   disabled,
@@ -36,67 +57,76 @@ export const CreateRequestForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-[2rem] border border-stone-200 bg-white/90 p-6 shadow-[0_25px_80px_rgba(50,38,18,0.08)]"
+      className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)]"
     >
-      <div className="max-w-3xl space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-stone-500">Borrower desk</p>
-        <h2 className="text-3xl font-semibold text-stone-900">Create a confidential invoice financing request</h2>
-        <p className="text-sm leading-6 text-stone-600">
-          Borrowers publish timeline and request status while the amount and minimum acceptable payout stay encrypted.
-        </p>
+      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#0f1117] px-6 py-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="bf-encrypt-badge">
+              <span className="bf-lock-dot" />
+              Encrypted submission
+            </span>
+            <h2 className="mt-3 text-2xl font-bold text-[#fdfaf4]">Create a financing request</h2>
+            <p className="mt-1 text-sm text-[#fdfaf4]/60">
+              Invoice amount and minimum payout are encrypted with FHE before leaving your device. No one else sees them.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-6 grid gap-5 md:grid-cols-2">
-        <label>
-          <span className={labelClass}>Invoice amount</span>
-          <input
-            className={inputClass}
-            inputMode="numeric"
+      <div className="px-6 py-6 space-y-5">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field
+            label="Invoice amount (bfUSD)"
+            hint="The face value of the invoice you are financing"
             value={invoiceAmount}
-            onChange={event => setInvoiceAmount(event.target.value)}
-          />
-        </label>
-        <label>
-          <span className={labelClass}>Minimum payout</span>
-          <input
-            className={inputClass}
+            onChange={setInvoiceAmount}
             inputMode="numeric"
+          />
+          <Field
+            label="Minimum payout (bfUSD)"
+            hint="The lowest upfront amount you will accept from a lender"
             value={minPayout}
-            onChange={event => setMinPayout(event.target.value)}
-          />
-        </label>
-        <label>
-          <span className={labelClass}>Bidding window in hours</span>
-          <input
-            className={inputClass}
+            onChange={setMinPayout}
             inputMode="numeric"
+          />
+          <Field
+            label="Bidding window in hours"
+            hint="How long lenders have to submit encrypted bids"
             value={biddingHours}
-            onChange={event => setBiddingHours(event.target.value)}
-          />
-        </label>
-        <label>
-          <span className={labelClass}>Days until repayment</span>
-          <input
-            className={inputClass}
+            onChange={setBiddingHours}
             inputMode="numeric"
-            value={dueDays}
-            onChange={event => setDueDays(event.target.value)}
           />
-        </label>
+          <Field
+            label="Days until repayment"
+            hint="How many days after bidding closes you will repay the lender"
+            value={dueDays}
+            onChange={setDueDays}
+            inputMode="numeric"
+          />
+        </div>
+
+        <Field
+          label="Invoice reference"
+          hint="A short identifier for this invoice (hashed on chain, not stored in plaintext)"
+          value={invoiceRef}
+          onChange={setInvoiceRef}
+        />
+
+        <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-3">
+          <p className="text-xs text-[#7a4f00]">
+            Encryption happens in your browser before the transaction is broadcast. The contract receives only FHE ciphertexts.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          disabled={disabled || isPending}
+          className="bf-btn-primary w-full"
+        >
+          {isPending ? "Encrypting and submitting..." : "Encrypt and create request"}
+        </button>
       </div>
-
-      <label className="mt-5 block">
-        <span className={labelClass}>Invoice reference</span>
-        <input className={inputClass} value={invoiceRef} onChange={event => setInvoiceRef(event.target.value)} />
-      </label>
-
-      <button
-        type="submit"
-        disabled={disabled || isPending}
-        className="mt-6 inline-flex items-center justify-center rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isPending ? "Submitting request..." : "Encrypt and create request"}
-      </button>
     </form>
   );
 };

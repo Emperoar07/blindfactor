@@ -7,8 +7,11 @@ import { BlindFactorRequest } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
 const formatDate = (timestamp: number) =>
   new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(new Date(timestamp * 1000));
 
 const shortAddress = (value: string) =>
@@ -16,63 +19,75 @@ const shortAddress = (value: string) =>
     ? `${value.slice(0, 6)}...${value.slice(-4)}`
     : "None";
 
+const MetaTile = ({ label, value, mono }: { label: string; value: string; mono?: boolean }) => (
+  <div className="bf-stat-tile">
+    <p className="bf-label mb-1.5">{label}</p>
+    <p className={`text-sm font-semibold text-[#0f1117] ${mono ? "font-mono" : ""}`}>{value}</p>
+  </div>
+);
+
 export const RequestCard = ({ request, children }: { request: BlindFactorRequest; children?: ReactNode }) => {
+  const isExpired = request.biddingEndsAt < Math.floor(Date.now() / 1000);
+
   return (
-    <article className="rounded-[2rem] border border-stone-200 bg-white/90 p-6 shadow-[0_25px_80px_rgba(50,38,18,0.08)] backdrop-blur">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-500">
-              Request #{request.id}
-            </span>
-            <StatusBadge status={request.statusLabel} />
+    <article className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)]">
+      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-6 py-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="bf-label">Request #{request.id}</span>
+              <StatusBadge status={request.statusLabel} />
+              {request.hasMyBid && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#d4ede6] border border-[#a8d9cc] px-2.5 py-0.5 text-xs font-bold text-[#1a5c45]">
+                  My bid placed
+                </span>
+              )}
+              {isExpired && request.status === 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#f4e4e4] border border-[#e8b4b4] px-2.5 py-0.5 text-xs font-bold text-[#9b2c2c]">
+                  Bidding expired
+                </span>
+              )}
+            </div>
+            <h3 className="text-xl font-bold text-[#0f1117]">Confidential invoice financing round</h3>
+            <p className="text-sm leading-relaxed text-[#7a6f63]">
+              Workflow state is public. Invoice value, minimum payout, and all bid figures stay encrypted until the authorized wallet decrypts them.
+            </p>
           </div>
-          <h3 className="text-2xl font-semibold text-stone-900">Confidential invoice financing round</h3>
-          <p className="max-w-2xl text-sm leading-6 text-stone-600">
-            BlindFactor keeps workflow state public and financial terms encrypted so lenders can bid without public
-            leakage.
-          </p>
-        </div>
 
-        <Link
-          href={`/requests/${request.id}`}
-          className="inline-flex items-center justify-center rounded-full border border-stone-900 px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-900 hover:text-stone-50"
-        >
-          Open request room
-        </Link>
-      </div>
-
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-3xl bg-stone-50 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Borrower</p>
-          <p className="mt-2 font-mono text-sm text-stone-900">{shortAddress(request.borrower)}</p>
-        </div>
-        <div className="rounded-3xl bg-stone-50 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Bidding ends</p>
-          <p className="mt-2 text-sm font-semibold text-stone-900">{formatDate(request.biddingEndsAt)}</p>
-        </div>
-        <div className="rounded-3xl bg-stone-50 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Due date</p>
-          <p className="mt-2 text-sm font-semibold text-stone-900">{formatDate(request.dueAt)}</p>
-        </div>
-        <div className="rounded-3xl bg-stone-50 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Bid count</p>
-          <p className="mt-2 text-sm font-semibold text-stone-900">{request.bidCount} / 3</p>
+          <Link
+            href={`/requests/${request.id}`}
+            className="bf-btn-outline shrink-0 text-sm"
+          >
+            Open room
+          </Link>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="rounded-3xl border border-stone-200 bg-stone-50/70 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Invoice reference hash</p>
-          <p className="mt-2 break-all font-mono text-xs text-stone-700">{request.invoiceRefHash}</p>
+      <div className="px-6 py-5">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+          <MetaTile label="Borrower" value={shortAddress(request.borrower)} mono />
+          <MetaTile label="Bidding ends" value={formatDate(request.biddingEndsAt)} />
+          <MetaTile label="Due date" value={formatDate(request.dueAt)} />
+          <MetaTile label="Bids" value={`${request.bidCount} of 3`} />
         </div>
-        <div className="rounded-3xl border border-stone-200 bg-stone-50/70 p-4">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-500">Accepted lender</p>
-          <p className="mt-2 font-mono text-sm text-stone-700">{shortAddress(request.acceptedLender)}</p>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className="bf-stat-tile">
+            <p className="bf-label mb-1.5">Invoice reference hash</p>
+            <p className="break-all font-mono text-xs text-[#7a6f63]">{request.invoiceRefHash}</p>
+          </div>
+          <div className="bf-stat-tile">
+            <p className="bf-label mb-1.5">Accepted lender</p>
+            <p className="font-mono text-sm font-semibold text-[#0f1117]">{shortAddress(request.acceptedLender)}</p>
+          </div>
         </div>
       </div>
 
-      {children ? <div className="mt-6 space-y-4">{children}</div> : null}
+      {children ? (
+        <div className="border-t border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-6 py-5 space-y-4">
+          {children}
+        </div>
+      ) : null}
     </article>
   );
 };

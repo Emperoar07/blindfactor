@@ -27,63 +27,98 @@ export const FundingActionPanel = ({
   canMarkRepaid,
   onMarkRepaid,
 }: FundingActionPanelProps) => {
+  const hasAnyAction = canClose || canAccept || canFund || canMarkRepaid;
+
+  if (!hasAnyAction) return null;
+
   return (
-    <section className="rounded-3xl border border-stone-200 bg-stone-50/80 p-4">
-      <h4 className="text-lg font-semibold text-stone-900">Request actions</h4>
-      <p className="mt-1 text-sm leading-6 text-stone-600">
-        Borrowers use clear winning outputs only when they need to accept the selected lender. Funding and repayment
-        remain tokenized confidential transfers.
-      </p>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        {canClose ? (
-          <button
-            type="button"
-            onClick={() => void onClose?.()}
-            className="rounded-full border border-stone-900 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-900 hover:text-stone-50"
-          >
-            {pendingAction === "Close bidding" ? "Closing..." : "Close bidding"}
-          </button>
-        ) : null}
-
-        {canFund ? (
-          <button
-            type="button"
-            onClick={() => void onFund?.()}
-            className="rounded-full bg-stone-900 px-4 py-2 text-sm font-semibold text-stone-50 transition hover:bg-stone-700"
-          >
-            {pendingAction === "Fund request" ? "Funding..." : "Fund request"}
-          </button>
-        ) : null}
-
-        {canMarkRepaid ? (
-          <button
-            type="button"
-            onClick={() => void onMarkRepaid?.()}
-            className="rounded-full bg-stone-900 px-4 py-2 text-sm font-semibold text-stone-50 transition hover:bg-stone-700"
-          >
-            {pendingAction === "Mark repaid" ? "Marking..." : "Mark repaid"}
-          </button>
-        ) : null}
+    <div className="overflow-hidden rounded-2xl border border-[rgba(180,165,140,0.3)] bg-white">
+      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-5 py-3.5">
+        <h4 className="text-base font-bold text-[#0f1117]">Request actions</h4>
+        <p className="text-xs leading-relaxed text-[#7a6f63]">
+          Lifecycle transitions happen here. The borrower controls closing, accepting, and repaying. The accepted lender controls funding.
+        </p>
       </div>
 
-      {canAccept ? (
-        <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
-          <input
-            value={acceptBidId}
-            onChange={event => onAcceptBidIdChange(event.target.value)}
-            placeholder="Winning bid id after borrower decryption"
-            className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-900"
-          />
-          <button
-            type="button"
-            onClick={() => void onAccept?.()}
-            className="rounded-full border border-stone-900 px-4 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-900 hover:text-stone-50"
-          >
-            {pendingAction === "Accept winning bid" ? "Accepting..." : "Accept winning bid"}
-          </button>
-        </div>
-      ) : null}
-    </section>
+      <div className="px-5 py-4 space-y-4">
+        {canClose && (
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold text-[#7a4f00]">Close bidding window</p>
+              <p className="text-xs text-[#7a4f00]/70">Only the borrower or the contract after expiry can close</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void onClose?.()}
+              className="bf-btn-outline shrink-0 text-sm px-4 py-2"
+            >
+              {pendingAction === "Close bidding" ? "Closing..." : "Close bidding"}
+            </button>
+          </div>
+        )}
+
+        {canAccept && (
+          <div className="space-y-3 rounded-xl bg-[#fdfaf4] border border-[rgba(180,165,140,0.3)] px-4 py-4">
+            <div>
+              <p className="text-sm font-semibold text-[#0f1117]">Accept the winning lender</p>
+              <p className="text-xs leading-relaxed text-[#7a6f63]">
+                Decrypt the winning bid id above, enter it here, then accept on chain to lock in the selected lender.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <input
+                value={acceptBidId}
+                onChange={e => onAcceptBidIdChange(e.target.value)}
+                placeholder="Winning bid id from decryption"
+                className="bf-input flex-1"
+              />
+              <button
+                type="button"
+                onClick={() => void onAccept?.()}
+                className="bf-btn-gold shrink-0 text-sm px-5 py-3"
+              >
+                {pendingAction === "Accept winning bid" ? "Accepting..." : "Accept lender"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {canFund && (
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#d4ede6] border border-[#a8d9cc] px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold text-[#1a5c45]">Fund the borrower</p>
+              <p className="text-xs text-[#1a5c45]/70">
+                You have been selected. The transfer amount is the encrypted winning payout.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void onFund?.()}
+              className="bf-btn-primary shrink-0 text-sm px-4 py-2"
+            >
+              {pendingAction === "Fund request" ? "Funding..." : "Fund request"}
+            </button>
+          </div>
+        )}
+
+        {canMarkRepaid && (
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdfaf4] border border-[rgba(180,165,140,0.3)] px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold text-[#0f1117]">Mark as repaid</p>
+              <p className="text-xs text-[#7a6f63]">
+                Confirms the repayment transfer to the lender and closes the round.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void onMarkRepaid?.()}
+              className="bf-btn-primary shrink-0 text-sm px-4 py-2"
+            >
+              {pendingAction === "Mark repaid" ? "Marking..." : "Mark repaid"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
