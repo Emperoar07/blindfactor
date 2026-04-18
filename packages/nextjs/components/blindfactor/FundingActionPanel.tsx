@@ -67,6 +67,9 @@ export const FundingActionPanel = ({
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
+                type="number"
+                min="0"
+                step="1"
                 value={acceptBidId}
                 onChange={e => onAcceptBidIdChange(e.target.value)}
                 placeholder="Winning bid id from decryption"
@@ -75,6 +78,7 @@ export const FundingActionPanel = ({
               <button
                 type="button"
                 onClick={() => void onAccept?.()}
+                disabled={acceptBidId === "" || isNaN(Number(acceptBidId)) || Number(acceptBidId) < 0}
                 className="bf-btn-gold shrink-0 text-sm px-5 py-3"
               >
                 {pendingAction === "Accept winning bid" ? "Accepting..." : "Accept lender"}

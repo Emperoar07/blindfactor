@@ -60,6 +60,8 @@ export const DecryptPanel = ({
 }) => {
   const [items, setItems] = useState<BlindFactorDecryptItem[]>([]);
   const [loadMessage, setLoadMessage] = useState("");
+  const [isLoadingHandles, setIsLoadingHandles] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const { canDecrypt, decrypt, isDecrypting, message, error, valuesByKey } = useBlindFactorDecryption({
     instance,
     ethersSigner,
@@ -68,13 +70,21 @@ export const DecryptPanel = ({
   });
 
   const handleLoad = async () => {
-    const nextItems = await loadItems();
-    setItems(nextItems);
-    setLoadMessage(
-      nextItems.length > 0
-        ? `${nextItems.length} encrypted handle${nextItems.length > 1 ? "s" : ""} loaded for your wallet.`
-        : "No decryptable values are available for this wallet on this request.",
-    );
+    setIsLoadingHandles(true);
+    setLoadError(null);
+    try {
+      const nextItems = await loadItems();
+      setItems(nextItems);
+      setLoadMessage(
+        nextItems.length > 0
+          ? `${nextItems.length} encrypted handle${nextItems.length > 1 ? "s" : ""} loaded for your wallet.`
+          : "No decryptable values are available for this wallet on this request.",
+      );
+    } catch (err) {
+      setLoadError(`Failed to load handles: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsLoadingHandles(false);
+    }
   };
 
   const hasResults = items.length > 0 && Object.keys(valuesByKey).some(k => typeof valuesByKey[k] !== "undefined");
@@ -91,9 +101,10 @@ export const DecryptPanel = ({
             <button
               type="button"
               onClick={handleLoad}
+              disabled={isLoadingHandles}
               className="bf-btn-outline text-xs px-4 py-2"
             >
-              Load handles
+              {isLoadingHandles ? "Loading..." : "Load handles"}
             </button>
             <button
               type="button"
@@ -111,12 +122,17 @@ export const DecryptPanel = ({
             {loadMessage}
           </p>
         )}
+        {loadError && (
+          <p className="mt-2 text-xs text-[#9b2c2c] bg-[#f4e4e4] border border-[#e8b4b4] rounded-lg px-3 py-2">
+            {loadError}
+          </p>
+        )}
         {message && !error && (
           <p className="mt-2 text-xs text-[#1a5c45]">{message}</p>
         )}
         {error && (
           <p className="mt-2 text-xs text-[#9b2c2c] bg-[#f4e4e4] border border-[#e8b4b4] rounded-lg px-3 py-2">
-            {error}
+            Decryption error: {error}
           </p>
         )}
       </div>

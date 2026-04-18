@@ -3,6 +3,19 @@
 import { FormEvent, useState } from "react";
 import { SubmitBidPayload } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
+const MAX_UINT64 = 18_446_744_073_709_551_615n;
+
+function validateBidForm(payoutNow: string, repaymentAtDue: string): string | null {
+  const payout = Number(payoutNow);
+  const repayment = Number(repaymentAtDue);
+  if (!Number.isInteger(payout) || payout <= 0) return "Payout now must be a positive whole number.";
+  if (BigInt(payout) > MAX_UINT64) return "Payout now exceeds the maximum supported value.";
+  if (!Number.isInteger(repayment) || repayment <= 0) return "Repayment at due date must be a positive whole number.";
+  if (BigInt(repayment) > MAX_UINT64) return "Repayment exceeds the maximum supported value.";
+  if (repayment <= payout) return "Repayment at due date should be greater than payout now.";
+  return null;
+}
+
 export const SubmitBidForm = ({
   requestId,
   disabled,
@@ -16,9 +29,16 @@ export const SubmitBidForm = ({
 }) => {
   const [payoutNow, setPayoutNow] = useState("8200");
   const [repaymentAtDue, setRepaymentAtDue] = useState("9000");
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const error = validateBidForm(payoutNow, repaymentAtDue);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+    setValidationError(null);
     await onSubmit({
       requestId,
       payoutNow: Number(payoutNow),
@@ -61,6 +81,12 @@ export const SubmitBidForm = ({
             />
           </label>
         </div>
+
+        {validationError && (
+          <p className="rounded-xl bg-[#f4e4e4] border border-[#e8b4b4] px-4 py-3 text-xs text-[#9b2c2c]">
+            {validationError}
+          </p>
+        )}
 
         <button
           type="submit"

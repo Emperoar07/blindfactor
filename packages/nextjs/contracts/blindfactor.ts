@@ -21,6 +21,7 @@ export const BLIND_FACTOR_MARKET_ABI = [
           { internalType: "enum BlindFactorMarket.RequestStatus", name: "status", type: "uint8" },
           { internalType: "uint32", name: "bidCount", type: "uint32" },
           { internalType: "address", name: "acceptedLender", type: "address" },
+          { internalType: "bool", name: "hasValidBid", type: "bool" },
         ],
         internalType: "struct BlindFactorMarket.RequestMeta",
         name: "",
@@ -124,10 +125,46 @@ export const BLIND_FACTOR_MARKET_ABI = [
   },
   {
     inputs: [{ internalType: "uint256", name: "requestId", type: "uint256" }],
+    name: "getFundingSuccessHandle",
+    outputs: [{ internalType: "ebool", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "requestId", type: "uint256" }],
+    name: "getRepaymentSuccessHandle",
+    outputs: [{ internalType: "ebool", name: "", type: "bytes32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "requestId", type: "uint256" }],
     name: "getRequestPrivateHandles",
     outputs: [
       { internalType: "euint64", name: "invoiceAmount", type: "bytes32" },
       { internalType: "euint64", name: "minPayout", type: "bytes32" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "requestId", type: "uint256" },
+      { internalType: "uint32", name: "bidId", type: "uint32" },
+    ],
+    name: "getBidMeta",
+    outputs: [
+      {
+        components: [
+          { internalType: "address", name: "lender", type: "address" },
+          { internalType: "uint32", name: "requestId", type: "uint32" },
+          { internalType: "bool", name: "exists", type: "bool" },
+          { internalType: "bool", name: "accepted", type: "bool" },
+        ],
+        internalType: "struct BlindFactorMarket.BidMeta",
+        name: "",
+        type: "tuple",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -153,6 +190,20 @@ export const BLIND_FACTOR_TOKEN_ABI = [
     name: "confidentialBalanceOf",
     outputs: [{ internalType: "euint64", name: "", type: "bytes32" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "from", type: "address" },
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "euint64", name: "amount", type: "bytes32" },
+    ],
+    name: "marketTransferFrom",
+    outputs: [
+      { internalType: "euint64", name: "transferred", type: "bytes32" },
+      { internalType: "ebool", name: "success", type: "bytes32" },
+    ],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ] as const;

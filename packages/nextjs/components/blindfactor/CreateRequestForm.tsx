@@ -3,6 +3,29 @@
 import { FormEvent, useState } from "react";
 import { CreateRequestPayload } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
+const MAX_UINT64 = 18_446_744_073_709_551_615n;
+
+function validateRequestForm(
+  invoiceAmount: string,
+  minPayout: string,
+  biddingHours: string,
+  dueDays: string,
+  invoiceRef: string,
+): string | null {
+  const invoice = Number(invoiceAmount);
+  const payout = Number(minPayout);
+  const hours = Number(biddingHours);
+  const days = Number(dueDays);
+  if (!Number.isInteger(invoice) || invoice <= 0) return "Invoice amount must be a positive whole number.";
+  if (BigInt(invoice) > MAX_UINT64) return "Invoice amount exceeds the maximum supported value.";
+  if (!Number.isInteger(payout) || payout <= 0) return "Minimum payout must be a positive whole number.";
+  if (payout > invoice) return "Minimum payout cannot exceed the invoice amount.";
+  if (!Number.isInteger(hours) || hours <= 0) return "Bidding window must be at least 1 hour.";
+  if (!Number.isInteger(days) || days <= 0) return "Days until repayment must be at least 1.";
+  if (!invoiceRef.trim()) return "Invoice reference cannot be empty.";
+  return null;
+}
+
 const Field = ({
   label,
   hint,
@@ -42,9 +65,16 @@ export const CreateRequestForm = ({
   const [biddingHours, setBiddingHours] = useState("24");
   const [dueDays, setDueDays] = useState("30");
   const [invoiceRef, setInvoiceRef] = useState("INV BLINDFACTOR 001");
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const error = validateRequestForm(invoiceAmount, minPayout, biddingHours, dueDays, invoiceRef);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+    setValidationError(null);
     await onSubmit({
       invoiceAmount: Number(invoiceAmount),
       minPayout: Number(minPayout),
@@ -118,6 +148,12 @@ export const CreateRequestForm = ({
             Encryption happens in your browser before the transaction is broadcast. The contract receives only FHE ciphertexts.
           </p>
         </div>
+
+        {validationError && (
+          <p className="rounded-xl bg-[#f4e4e4] border border-[#e8b4b4] px-4 py-3 text-xs text-[#9b2c2c]">
+            {validationError}
+          </p>
+        )}
 
         <button
           type="submit"

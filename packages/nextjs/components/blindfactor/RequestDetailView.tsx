@@ -6,6 +6,7 @@ import { DecryptPanel } from "./DecryptPanel";
 import { FundingActionPanel } from "./FundingActionPanel";
 import { RequestCard } from "./RequestCard";
 import { SubmitBidForm } from "./SubmitBidForm";
+import { ZERO_ADDRESS } from "~~/contracts/constants";
 import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
 export const RequestDetailView = ({ requestId }: { requestId: number }) => {
@@ -99,7 +100,7 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
           canAccept={
             isBorrower &&
             request.status === 2 &&
-            request.acceptedLender === "0x0000000000000000000000000000000000000000"
+            request.acceptedLender === ZERO_ADDRESS
           }
           onAccept={() => blindFactor.acceptWinningBid(request.id, Number(acceptBidId))}
           canFund={isAcceptedLender && request.status === 2}

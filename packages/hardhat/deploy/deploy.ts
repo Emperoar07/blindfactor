@@ -24,9 +24,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   if (hre.network.name !== "hardhat") {
     const token = await hre.ethers.getContractAt("BlindFactorToken", deployedBlindFactorToken.address);
-    for (const signer of signers.slice(1, 4)) {
-      const mintTx = await token.connect(signers[0]).mint(signer.address, DEMO_LIQUIDITY);
-      await mintTx.wait();
+    const demoRecipients = signers.slice(1, Math.min(4, signers.length));
+    if (demoRecipients.length === 0) {
+      console.log("No additional signers available for demo liquidity minting; only deployer key configured.");
+    } else {
+      for (const signer of demoRecipients) {
+        const mintTx = await token.connect(signers[0]).mint(signer.address, DEMO_LIQUIDITY);
+        await mintTx.wait();
+        console.log(`Minted ${DEMO_LIQUIDITY} bfUSD demo liquidity to ${signer.address}`);
+      }
     }
   } else {
     console.log("Skipping demo liquidity mint on ephemeral hardhat network; use localhost or Sepolia deploy for funded wallets.");

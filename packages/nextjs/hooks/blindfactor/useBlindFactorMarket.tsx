@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBlindFactorEncryption } from "./useBlindFactorEncryption";
 import { useFhevm } from "@fhevm-sdk";
 import { ethers } from "ethers";
@@ -102,6 +102,7 @@ export const useBlindFactorMarket = () => {
   const [activityMessage, setActivityMessage] = useState<string>("");
   const [pendingAction, setPendingAction] = useState<string>("");
   const [refreshIndex, setRefreshIndex] = useState(0);
+  const loadGeneration = useRef(0);
 
   const refresh = useCallback(() => {
     setRefreshIndex(value => value + 1);
@@ -113,6 +114,7 @@ export const useBlindFactorMarket = () => {
       return;
     }
 
+    const generation = ++loadGeneration.current;
     setIsLoadingRequests(true);
     try {
       const nextRequestId = Number(await marketReadContract.nextRequestId());
@@ -144,14 +146,18 @@ export const useBlindFactorMarket = () => {
         }),
       );
 
+      if (generation !== loadGeneration.current) return;
       setRequests(nextRequests.reverse());
     } catch (error) {
+      if (generation !== loadGeneration.current) return;
       setActivityMessage(
         `Unable to load BlindFactor requests: ${error instanceof Error ? error.message : String(error)}`,
       );
       setRequests([]);
     } finally {
-      setIsLoadingRequests(false);
+      if (generation === loadGeneration.current) {
+        setIsLoadingRequests(false);
+      }
     }
   }, [marketReadContract, currentAccount]);
 
@@ -172,6 +178,10 @@ export const useBlindFactorMarket = () => {
         await tx.wait();
         setActivityMessage(`${label} confirmed onchain.`);
         refresh();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        setActivityMessage(`${label} failed: ${message}`);
+        throw error;
       } finally {
         setPendingAction("");
       }
@@ -296,7 +306,8 @@ export const useBlindFactorMarket = () => {
             { key: "winningBidId", label: "Winning bid id", handle: winningBidId, contractAddress: marketAddress },
             { key: "winningPayout", label: "Winning payout", handle: winningPayout, contractAddress: marketAddress },
           ];
-        } catch {
+        } catch (error) {
+          console.debug("[loadWinningItems] borrower handles not available for this wallet:", error);
           return [];
         }
       })();
@@ -310,7 +321,8 @@ export const useBlindFactorMarket = () => {
             handle: winningRepayment,
             contractAddress: marketAddress,
           };
-        } catch {
+        } catch (error) {
+          console.debug("[loadWinningItems] repayment handle not available for this wallet:", error);
           return null;
         }
       })();

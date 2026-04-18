@@ -66,6 +66,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
     error BlindFactorTokenUnset();
     error BlindFactorInvalidBidId(uint32 bidId);
     error BlindFactorNoValidBid(uint256 requestId);
+    error BlindFactorUnauthorizedHandle(address caller);
 
     event RequestCreated(uint256 indexed requestId, address indexed borrower, uint64 dueAt, uint64 biddingEndsAt, bytes32 invoiceRefHash);
     event BidSubmitted(uint256 indexed requestId, uint32 indexed bidId, address indexed lender);
@@ -116,6 +117,8 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         requestPrivate.winningBidId = FHE.asEuint32(INVALID_BID_ID);
         requestPrivate.winningPayout = FHE.asEuint64(0);
         requestPrivate.winningRepaymentAtDue = FHE.asEuint64(0);
+        requestPrivate.fundingSuccess = FHE.asEbool(false);
+        requestPrivate.repaymentSuccess = FHE.asEbool(false);
 
         _grantBorrowerAndContractAccess(requestPrivate.invoiceAmount, msg.sender);
         _grantBorrowerAndContractAccess(requestPrivate.minPayout, msg.sender);
@@ -123,6 +126,10 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         _grantBorrowerAndContractAccess(requestPrivate.winningRepaymentAtDue, msg.sender);
         FHE.allowThis(requestPrivate.winningBidId);
         FHE.allow(requestPrivate.winningBidId, msg.sender);
+        FHE.allowThis(requestPrivate.fundingSuccess);
+        FHE.allow(requestPrivate.fundingSuccess, msg.sender);
+        FHE.allowThis(requestPrivate.repaymentSuccess);
+        FHE.allow(requestPrivate.repaymentSuccess, msg.sender);
 
         emit RequestCreated(requestId, msg.sender, dueAt, biddingEndsAt, invoiceRefHash);
     }
@@ -292,9 +299,25 @@ contract BlindFactorMarket is ZamaEthereumConfig {
     function getWinningRepaymentHandle(uint256 requestId) external view returns (euint64) {
         RequestMeta storage meta = _requestMeta(requestId);
         if (!(msg.sender == meta.borrower || msg.sender == meta.acceptedLender)) {
-            revert BlindFactorNotBorrower(msg.sender);
+            revert BlindFactorUnauthorizedHandle(msg.sender);
         }
         return _requestPrivates[requestId].winningRepaymentAtDue;
+    }
+
+    function getFundingSuccessHandle(uint256 requestId) external view returns (ebool) {
+        RequestMeta storage meta = _requestMeta(requestId);
+        if (!(msg.sender == meta.borrower || msg.sender == meta.acceptedLender)) {
+            revert BlindFactorUnauthorizedHandle(msg.sender);
+        }
+        return _requestPrivates[requestId].fundingSuccess;
+    }
+
+    function getRepaymentSuccessHandle(uint256 requestId) external view returns (ebool) {
+        RequestMeta storage meta = _requestMeta(requestId);
+        if (!(msg.sender == meta.borrower || msg.sender == meta.acceptedLender)) {
+            revert BlindFactorUnauthorizedHandle(msg.sender);
+        }
+        return _requestPrivates[requestId].repaymentSuccess;
     }
 
     function getRequestPrivateHandles(uint256 requestId) external view returns (euint64 invoiceAmount, euint64 minPayout) {

@@ -234,4 +234,190 @@ describe("BlindFactorMarket", function () {
     expect(borrowerBalanceAfterRepayment).to.eq(1_000n);
     expect(lenderBBalanceAfterRepayment).to.eq(11_000n);
   });
+
+  it("fundAcceptedRequest stores a true fundingSuccess handle the borrower can decrypt", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-004"));
+
+    const bidA = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bidA.handles[0], bidA.handles[1], bidA.inputProof);
+    await market.connect(signers.borrower).closeBidding(0);
+
+    const winningBidIdHandle = await market.connect(signers.borrower).getWinningBidIdHandle(0);
+    const winningBidId = await fhevm.userDecryptEuint(FhevmType.euint32, winningBidIdHandle, marketAddress, signers.borrower);
+    await market.connect(signers.borrower).acceptWinningBid(0, Number(winningBidId));
+    await market.connect(signers.lenderA).fundAcceptedRequest(0);
+
+    const fundingSuccessHandle = await market.connect(signers.borrower).getFundingSuccessHandle(0);
+    const fundingSuccess = await fhevm.userDecryptEbool(fundingSuccessHandle, marketAddress, signers.borrower);
+    expect(fundingSuccess).to.eq(true);
+  });
+
+  it("hasValidBid is false before any bid and true after a bid is submitted", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-005"));
+
+    let meta = await market.getRequestMeta(0);
+    expect(meta.hasValidBid).to.eq(false);
+
+    const bidA = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bidA.handles[0], bidA.handles[1], bidA.inputProof);
+
+    meta = await market.getRequestMeta(0);
+    expect(meta.hasValidBid).to.eq(true);
+  });
+
+  it("rejects acceptWinningBid when no bids have been submitted", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-006"));
+    await market.connect(signers.borrower).closeBidding(0);
+
+    await expect(
+      market.connect(signers.borrower).acceptWinningBid(0, 0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorNoValidBid");
+  });
+
+  it("rejects borrower bidding on their own request", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-007"));
+
+    const bid = await createBidInputs(signers.borrower, 8_000, 9_000);
+    await expect(
+      market.connect(signers.borrower).submitBid(0, bid.handles[0], bid.handles[1], bid.inputProof),
+    ).to.be.revertedWithCustomError(market, "BlindFactorBorrowerCannotBid");
+  });
+
+  it("rejects duplicate bids from the same lender", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-008"));
+
+    const bid1 = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bid1.handles[0], bid1.handles[1], bid1.inputProof);
+
+    const bid2 = await createBidInputs(signers.lenderA, 8_500, 9_500);
+    await expect(
+      market.connect(signers.lenderA).submitBid(0, bid2.handles[0], bid2.handles[1], bid2.inputProof),
+    ).to.be.revertedWithCustomError(market, "BlindFactorDuplicateBid");
+  });
+
+  it("rejects closeBidding from a non-borrower before deadline", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-009"));
+
+    await expect(
+      market.connect(signers.lenderA).closeBidding(0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorBiddingStillOpen");
+  });
+
+  it("rejects acceptWinningBid from a non-borrower", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-010"));
+
+    const bid = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bid.handles[0], bid.handles[1], bid.inputProof);
+    await market.connect(signers.borrower).closeBidding(0);
+
+    await expect(
+      market.connect(signers.lenderA).acceptWinningBid(0, 0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorNotBorrower");
+  });
+
+  it("rejects getWinningPayoutHandle from a non-borrower", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-011"));
+
+    await expect(
+      market.connect(signers.lenderA).getWinningPayoutHandle(0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorNotBorrower");
+  });
+
+  it("rejects getWinningRepaymentHandle from a non-participant", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-012"));
+
+    await expect(
+      market.connect(signers.lenderA).getWinningRepaymentHandle(0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorUnauthorizedHandle");
+  });
+
+  it("rejects fundAcceptedRequest from a non-accepted lender", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-013"));
+
+    const bidA = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bidA.handles[0], bidA.handles[1], bidA.inputProof);
+    await market.connect(signers.borrower).closeBidding(0);
+    await market.connect(signers.borrower).acceptWinningBid(0, 0);
+
+    await expect(
+      market.connect(signers.lenderB).fundAcceptedRequest(0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorNotAcceptedLender");
+  });
+
+  it("rejects getOwnBidHandles from a non-bidder", async function () {
+    const dueAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const biddingEndsAt = dueAt - 24 * 60 * 60;
+    const enc = await createRequestInputs(signers.borrower, 10_000, 7_000);
+
+    await market
+      .connect(signers.borrower)
+      .createRequest(enc.handles[0], enc.handles[1], enc.inputProof, dueAt, biddingEndsAt, ethers.id("INV-014"));
+
+    const bidA = await createBidInputs(signers.lenderA, 8_000, 9_000);
+    await market.connect(signers.lenderA).submitBid(0, bidA.handles[0], bidA.handles[1], bidA.inputProof);
+
+    await expect(
+      market.connect(signers.lenderB).getOwnBidHandles(0, 0),
+    ).to.be.revertedWithCustomError(market, "BlindFactorInvalidBidId");
+  });
 });

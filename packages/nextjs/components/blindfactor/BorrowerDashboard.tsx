@@ -5,6 +5,7 @@ import { CreateRequestForm } from "./CreateRequestForm";
 import { DecryptPanel } from "./DecryptPanel";
 import { FundingActionPanel } from "./FundingActionPanel";
 import { RequestCard } from "./RequestCard";
+import { ZERO_ADDRESS } from "~~/contracts/constants";
 import { RainbowKitCustomConnectButton } from "~~/components/helper/RainbowKitCustomConnectButton";
 import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
@@ -103,7 +104,7 @@ export const BorrowerDashboard = () => {
               canClose={request.status === 0}
               onClose={() => blindFactor.closeBidding(request.id)}
               canAccept={
-                request.status === 2 && request.acceptedLender === "0x0000000000000000000000000000000000000000"
+                request.status === 2 && request.acceptedLender === ZERO_ADDRESS
               }
               onAccept={() => blindFactor.acceptWinningBid(request.id, Number(acceptBidIds[request.id] ?? "0"))}
               canMarkRepaid={request.status === 3}
