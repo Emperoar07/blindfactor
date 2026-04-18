@@ -219,8 +219,8 @@ const LOCAL_DEFAULTS: BlindFactorDeployment = {
 };
 
 const SEPOLIA_DEFAULTS: BlindFactorDeployment = {
-  marketAddress: "0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC",
-  tokenAddress: "0x086eb01D2983b7E4bbB7A1EF519d741FBd350038",
+  marketAddress: "0x720dD7325d14B12176EDac06738D9420982cB8cE",
+  tokenAddress: "0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF",
 };
 
 export const getBlindFactorDeployment = (chainId?: number): BlindFactorDeployment => {

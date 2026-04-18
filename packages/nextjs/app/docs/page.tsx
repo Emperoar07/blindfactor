@@ -33,6 +33,7 @@ const tocItems = [
   { id: "settlement-token", label: "Settlement token" },
   { id: "contracts", label: "Smart contracts" },
   { id: "privacy", label: "Privacy policy" },
+  { id: "cookies", label: "Cookie policy" },
   { id: "terms", label: "Terms of use" },
 ];
 
@@ -202,8 +203,8 @@ export default function DocsPage() {
 
           <Section id="contracts" title="Smart contracts">
             <SubSection title="Sepolia deployment">
-              <CodeBlock>{`BlindFactorMarket: 0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC
-BlindFactorToken:  0x086eb01D2983b7E4bbB7A1EF519d741FBd350038`}</CodeBlock>
+              <CodeBlock>{`BlindFactorMarket: 0x720dD7325d14B12176EDac06738D9420982cB8cE
+BlindFactorToken:  0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF`}</CodeBlock>
             </SubSection>
             <SubSection title="BlindFactorMarket">
               <p>
@@ -240,6 +241,29 @@ BlindFactorToken:  0x086eb01D2983b7E4bbB7A1EF519d741FBd350038`}</CodeBlock>
             </p>
             <p>
               By connecting your wallet and submitting transactions you acknowledge that blockchain transactions are public and permanent. You are solely responsible for the security of your private keys.
+            </p>
+          </Section>
+
+          <Section id="cookies" title="Cookie policy">
+            <p>
+              BlindFactor uses a minimal set of browser storage mechanisms required for the application to function. There are no advertising cookies, no third-party trackers, and no analytics scripts.
+            </p>
+            <SubSection title="What we store locally">
+              <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
+                <li><strong>Wallet connection state</strong> — RainbowKit stores your last connected wallet type in <code>localStorage</code> so the app can reconnect automatically on your next visit. This data never leaves your browser.</li>
+                <li><strong>WalletConnect session</strong> — If you connect via WalletConnect, a temporary session key is stored in <code>localStorage</code> for the duration of your session. It is cleared when you disconnect.</li>
+              </ul>
+            </SubSection>
+            <SubSection title="What we do not use">
+              <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
+                <li>No analytics or tracking cookies (no Google Analytics, Mixpanel, or similar)</li>
+                <li>No advertising or retargeting cookies</li>
+                <li>No server-side session cookies (there is no backend)</li>
+                <li>No fingerprinting or cross-site tracking</li>
+              </ul>
+            </SubSection>
+            <p>
+              Because this application is entirely client-side and blockchain-based, we do not have the ability to link your browsing behavior to your identity. You can clear all locally stored data at any time through your browser settings without affecting your on-chain assets.
             </p>
           </Section>
 

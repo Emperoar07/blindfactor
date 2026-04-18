@@ -82,7 +82,7 @@ Main frontend entry points:
 1. `packages/nextjs/app/page.tsx`
 2. `packages/nextjs/app/borrower/page.tsx`
 3. `packages/nextjs/app/lender/page.tsx`
-4. `packages/nextjs/app/requests/[id]/page.tsx`
+4. `packages/nextjs/app/request/page.tsx` (query-param route: `/request?id=<id>`)
 5. `packages/nextjs/app/docs/page.tsx`
 
 Frontend contract config and hooks:
@@ -135,8 +135,8 @@ Then set the frontend env vars:
 
 Current live Sepolia deployment:
 
-1. `BlindFactorMarket`: `0x9D8Fd01A7bb63BBA5513d8Ed7d46839E16Ae46bC`
-2. `BlindFactorToken`: `0x086eb01D2983b7E4bbB7A1EF519d741FBd350038`
+1. `BlindFactorMarket`: `0x720dD7325d14B12176EDac06738D9420982cB8cE`
+2. `BlindFactorToken`: `0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF`
 
 The frontend now falls back to these deployed Sepolia addresses by default and still allows env overrides when needed.
 
