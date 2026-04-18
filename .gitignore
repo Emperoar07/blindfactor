@@ -10,3 +10,5 @@ packages/*/coverage
 tmp*
 .vscode
 .devnotes/
+
+.vercel

@@ -54,10 +54,7 @@ export const RequestCard = ({ request, children }: { request: BlindFactorRequest
             </p>
           </div>
 
-          <Link
-            href={`/requests/${request.id}`}
-            className="bf-btn-outline shrink-0 text-sm"
-          >
+          <Link href={`/request?id=${request.id}`} className="bf-btn-outline shrink-0 text-sm">
             Open room
           </Link>
         </div>
