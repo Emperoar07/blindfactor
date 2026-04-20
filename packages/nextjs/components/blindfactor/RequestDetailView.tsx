@@ -17,15 +17,15 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
 
   if (!request) {
     return (
-      <div className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)] p-8">
-        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#7a6f63] hover:text-[#0f1117] mb-5">
+      <div className="overflow-hidden rounded-2xl border border-[#ede4d5] bg-white shadow-[0_4px_24px_rgba(26,18,8,0.06)] p-8">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6b5b4e] hover:text-[#1a1208] mb-5">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           Back to overview
         </Link>
-        <h1 className="text-2xl font-bold text-[#0f1117]">Request room</h1>
-        <p className="mt-2 text-sm text-[#7a6f63]">
+        <h1 className="text-2xl font-bold text-[#1a1208]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Request room</h1>
+        <p className="mt-2 text-sm text-[#6b5b4e]">
           This request is not available on the currently selected network or has not loaded yet.
         </p>
         <button
@@ -45,7 +45,7 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#7a6f63] hover:text-[#0f1117]">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6b5b4e] hover:text-[#1a1208]">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
@@ -61,23 +61,23 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
       </div>
 
       {blindFactor.activityMessage ? (
-        <div className="flex items-center gap-3 rounded-xl border border-[rgba(180,165,140,0.3)] bg-white px-5 py-3.5">
-          <span className="h-2 w-2 rounded-full bg-[#e8a825] animate-pulse" />
-          <p className="text-sm text-[#0f1117]">{blindFactor.activityMessage}</p>
+        <div className="flex items-center gap-3 rounded-xl border border-[#ede4d5] bg-white px-5 py-3.5">
+          <span className="h-2 w-2 rounded-full bg-[#c45c2e] animate-pulse" />
+          <p className="text-sm text-[#1a1208]">{blindFactor.activityMessage}</p>
         </div>
       ) : null}
 
       {isBorrower && (
-        <div className="flex items-center gap-2.5 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-2.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#e8a825]" />
-          <p className="text-xs font-semibold text-[#7a4f00]">You are the borrower on this request</p>
+        <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(196,92,46,0.07)] border border-[rgba(196,92,46,0.2)] px-4 py-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#c45c2e]" />
+          <p className="text-xs font-semibold text-[#8b3a1e]">You are the borrower on this request</p>
         </div>
       )}
 
       {isAcceptedLender && (
-        <div className="flex items-center gap-2.5 rounded-xl bg-[#d4ede6] border border-[#a8d9cc] px-4 py-2.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#2d7a5f]" />
-          <p className="text-xs font-semibold text-[#1a5c45]">You are the accepted lender on this request</p>
+        <div className="flex items-center gap-2.5 rounded-xl bg-[rgba(74,124,89,0.1)] border border-[rgba(74,124,89,0.25)] px-4 py-2.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#4a7c59]" />
+          <p className="text-xs font-semibold text-[#4a7c59]">You are the accepted lender on this request</p>
         </div>
       )}
 

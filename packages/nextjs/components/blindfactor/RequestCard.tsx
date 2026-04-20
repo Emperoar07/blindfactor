@@ -22,7 +22,7 @@ const shortAddress = (value: string) =>
 const MetaTile = ({ label, value, mono }: { label: string; value: string; mono?: boolean }) => (
   <div className="bf-stat-tile">
     <p className="bf-label mb-1.5">{label}</p>
-    <p className={`text-sm font-semibold text-[#0f1117] ${mono ? "font-mono" : ""}`}>{value}</p>
+    <p className={`text-sm font-semibold text-[#1a1208] ${mono ? "font-mono" : ""}`}>{value}</p>
   </div>
 );
 
@@ -30,26 +30,26 @@ export const RequestCard = ({ request, children }: { request: BlindFactorRequest
   const isExpired = request.biddingEndsAt < Math.floor(Date.now() / 1000);
 
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)]">
-      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-6 py-5">
+    <article className="overflow-hidden rounded-2xl border border-[#ede4d5] bg-white shadow-[0_4px_24px_rgba(26,18,8,0.06)]">
+      <div className="border-b border-[#ede4d5] bg-[#f5e6d3] px-6 py-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="bf-label">Request #{request.id}</span>
               <StatusBadge status={request.statusLabel} />
               {request.hasMyBid && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#d4ede6] border border-[#a8d9cc] px-2.5 py-0.5 text-xs font-bold text-[#1a5c45]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[rgba(74,124,89,0.12)] border border-[rgba(74,124,89,0.3)] px-2.5 py-0.5 text-xs font-bold text-[#4a7c59]">
                   My bid placed
                 </span>
               )}
               {isExpired && request.status === 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#f4e4e4] border border-[#e8b4b4] px-2.5 py-0.5 text-xs font-bold text-[#9b2c2c]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#fde8e8] border border-[#f4b8b8] px-2.5 py-0.5 text-xs font-bold text-[#9b2c2c]">
                   Bidding expired
                 </span>
               )}
             </div>
-            <h3 className="text-xl font-bold text-[#0f1117]">Confidential invoice financing round</h3>
-            <p className="text-sm leading-relaxed text-[#7a6f63]">
+            <h3 className="text-xl font-bold text-[#1a1208]">Confidential invoice financing round</h3>
+            <p className="text-sm leading-relaxed text-[#6b5b4e]">
               Workflow state is public. Invoice value, minimum payout, and all bid figures stay encrypted until the authorized wallet decrypts them.
             </p>
           </div>
@@ -71,17 +71,17 @@ export const RequestCard = ({ request, children }: { request: BlindFactorRequest
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <div className="bf-stat-tile">
             <p className="bf-label mb-1.5">Invoice reference hash</p>
-            <p className="break-all font-mono text-xs text-[#7a6f63]">{request.invoiceRefHash}</p>
+            <p className="break-all font-mono text-xs text-[#6b5b4e]">{request.invoiceRefHash}</p>
           </div>
           <div className="bf-stat-tile">
             <p className="bf-label mb-1.5">Accepted lender</p>
-            <p className="font-mono text-sm font-semibold text-[#0f1117]">{shortAddress(request.acceptedLender)}</p>
+            <p className="font-mono text-sm font-semibold text-[#1a1208]">{shortAddress(request.acceptedLender)}</p>
           </div>
         </div>
       </div>
 
       {children ? (
-        <div className="border-t border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-6 py-5 space-y-4">
+        <div className="border-t border-[#ede4d5] bg-[#fdf8f2] px-6 py-5 space-y-4">
           {children}
         </div>
       ) : null}

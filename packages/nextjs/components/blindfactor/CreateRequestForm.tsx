@@ -13,9 +13,9 @@ function validateRequestForm(
   invoiceRef: string,
 ): string | null {
   const invoice = Number(invoiceAmount);
-  const payout = Number(minPayout);
-  const hours = Number(biddingHours);
-  const days = Number(dueDays);
+  const payout  = Number(minPayout);
+  const hours   = Number(biddingHours);
+  const days    = Number(dueDays);
   if (!Number.isInteger(invoice) || invoice <= 0) return "Invoice amount must be a positive whole number.";
   if (BigInt(invoice) > MAX_UINT64) return "Invoice amount exceeds the maximum supported value.";
   if (!Number.isInteger(payout) || payout <= 0) return "Minimum payout must be a positive whole number.";
@@ -41,7 +41,7 @@ const Field = ({
 }) => (
   <label className="block space-y-1.5">
     <span className="bf-label">{label}</span>
-    {hint && <span className="block text-xs text-[#7a6f63]">{hint}</span>}
+    {hint && <span className="block text-xs text-[#6b5b4e]">{hint}</span>}
     <input
       className="bf-input"
       inputMode={inputMode ?? "text"}
@@ -61,25 +61,22 @@ export const CreateRequestForm = ({
   onSubmit: (payload: CreateRequestPayload) => Promise<void>;
 }) => {
   const [invoiceAmount, setInvoiceAmount] = useState("10000");
-  const [minPayout, setMinPayout] = useState("7000");
-  const [biddingHours, setBiddingHours] = useState("24");
-  const [dueDays, setDueDays] = useState("30");
-  const [invoiceRef, setInvoiceRef] = useState("INV BLINDFACTOR 001");
+  const [minPayout, setMinPayout]         = useState("7000");
+  const [biddingHours, setBiddingHours]   = useState("24");
+  const [dueDays, setDueDays]             = useState("30");
+  const [invoiceRef, setInvoiceRef]       = useState("INV BLINDFACTOR 001");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const error = validateRequestForm(invoiceAmount, minPayout, biddingHours, dueDays, invoiceRef);
-    if (error) {
-      setValidationError(error);
-      return;
-    }
+    if (error) { setValidationError(error); return; }
     setValidationError(null);
     await onSubmit({
       invoiceAmount: Number(invoiceAmount),
-      minPayout: Number(minPayout),
-      biddingHours: Number(biddingHours),
-      dueDays: Number(dueDays),
+      minPayout:     Number(minPayout),
+      biddingHours:  Number(biddingHours),
+      dueDays:       Number(dueDays),
       invoiceRef,
     });
   };
@@ -87,79 +84,49 @@ export const CreateRequestForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="overflow-hidden rounded-[1.75rem] border border-[rgba(180,165,140,0.3)] bg-white shadow-[0_4px_24px_rgba(15,17,23,0.06)]"
+      className="overflow-hidden rounded-2xl border border-[#ede4d5] bg-white shadow-[0_4px_24px_rgba(26,18,8,0.06)]"
     >
-      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#0f1117] px-6 py-5">
+      {/* Header — dark ink matching Terra Clay preview */}
+      <div className="border-b border-[#ede4d5] bg-[#1a1208] px-6 py-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <span className="bf-encrypt-badge">
               <span className="bf-lock-dot" />
               Encrypted submission
             </span>
-            <h2 className="mt-3 text-2xl font-bold text-[#fdfaf4]">Create a financing request</h2>
-            <p className="mt-1 text-sm text-[#fdfaf4]/60">
-              Invoice amount and minimum payout are encrypted with FHE before leaving your device. No one else sees them.
+            <h2 className="mt-3 text-xl font-semibold text-[#fffcf7]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>
+              Create a financing request
+            </h2>
+            <p className="mt-1 text-sm text-[#fffcf7]/55">
+              Invoice amount and minimum payout are encrypted with FHE before leaving your device.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="px-6 py-6 space-y-5">
+      <div className="px-6 py-6 space-y-5 bg-[#fffcf7]">
         <div className="grid gap-5 md:grid-cols-2">
-          <Field
-            label="Invoice amount (bfUSD)"
-            hint="The face value of the invoice you are financing"
-            value={invoiceAmount}
-            onChange={setInvoiceAmount}
-            inputMode="numeric"
-          />
-          <Field
-            label="Minimum payout (bfUSD)"
-            hint="The lowest upfront amount you will accept from a lender"
-            value={minPayout}
-            onChange={setMinPayout}
-            inputMode="numeric"
-          />
-          <Field
-            label="Bidding window in hours"
-            hint="How long lenders have to submit encrypted bids"
-            value={biddingHours}
-            onChange={setBiddingHours}
-            inputMode="numeric"
-          />
-          <Field
-            label="Days until repayment"
-            hint="How many days after bidding closes you will repay the lender"
-            value={dueDays}
-            onChange={setDueDays}
-            inputMode="numeric"
-          />
+          <Field label="Invoice amount (bfUSD)" hint="The face value of the invoice you are financing" value={invoiceAmount} onChange={setInvoiceAmount} inputMode="numeric" />
+          <Field label="Minimum payout (bfUSD)" hint="The lowest upfront amount you will accept from a lender" value={minPayout} onChange={setMinPayout} inputMode="numeric" />
+          <Field label="Bidding window in hours" hint="How long lenders have to submit encrypted bids" value={biddingHours} onChange={setBiddingHours} inputMode="numeric" />
+          <Field label="Days until repayment" hint="How many days after bidding closes you will repay the lender" value={dueDays} onChange={setDueDays} inputMode="numeric" />
         </div>
 
-        <Field
-          label="Invoice reference"
-          hint="A short identifier for this invoice (hashed on chain, not stored in plaintext)"
-          value={invoiceRef}
-          onChange={setInvoiceRef}
-        />
+        <Field label="Invoice reference" hint="A short identifier for this invoice (hashed on chain, not stored in plaintext)" value={invoiceRef} onChange={setInvoiceRef} />
 
-        <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-3">
-          <p className="text-xs text-[#7a4f00]">
+        <div className="flex items-center gap-3 rounded-xl bg-[rgba(196,92,46,0.07)] border border-[rgba(196,92,46,0.18)] px-4 py-3">
+          <p className="text-xs text-[#8b3a1e]">
             Encryption happens in your browser before the transaction is broadcast. The contract receives only FHE ciphertexts.
           </p>
         </div>
 
         {validationError && (
-          <p className="rounded-xl bg-[#f4e4e4] border border-[#e8b4b4] px-4 py-3 text-xs text-[#9b2c2c]">
+          <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
             {validationError}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={disabled || isPending}
-          className="bf-btn-primary w-full"
-        >
+        <button type="submit" disabled={disabled || isPending} className="bf-btn-gold w-full py-3">
           {isPending ? "Encrypting and submitting..." : "Encrypt and create request"}
         </button>
       </div>

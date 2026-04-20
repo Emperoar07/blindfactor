@@ -28,24 +28,23 @@ export const FundingActionPanel = ({
   onMarkRepaid,
 }: FundingActionPanelProps) => {
   const hasAnyAction = canClose || canAccept || canFund || canMarkRepaid;
-
   if (!hasAnyAction) return null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[rgba(180,165,140,0.3)] bg-white">
-      <div className="border-b border-[rgba(180,165,140,0.2)] bg-[#fdfaf4] px-5 py-3.5">
-        <h4 className="text-base font-bold text-[#0f1117]">Request actions</h4>
-        <p className="text-xs leading-relaxed text-[#7a6f63]">
+    <div className="overflow-hidden rounded-2xl border border-[#ede4d5] bg-white">
+      <div className="border-b border-[#ede4d5] bg-[#f5e6d3] px-5 py-3.5">
+        <h4 className="text-sm font-bold text-[#1a1208]">Request actions</h4>
+        <p className="text-xs leading-relaxed text-[#6b5b4e]">
           Lifecycle transitions happen here. The borrower controls closing, accepting, and repaying. The accepted lender controls funding.
         </p>
       </div>
 
-      <div className="px-5 py-4 space-y-4">
+      <div className="px-5 py-4 space-y-3">
         {canClose && (
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdf4dc] border border-[#f0cc80] px-4 py-3">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[rgba(196,92,46,0.07)] border border-[rgba(196,92,46,0.2)] px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-[#7a4f00]">Close bidding window</p>
-              <p className="text-xs text-[#7a4f00]/70">Only the borrower or the contract after expiry can close</p>
+              <p className="text-sm font-semibold text-[#8b3a1e]">Close bidding window</p>
+              <p className="text-xs text-[#8b3a1e]/70">Only the borrower or the contract after expiry can close</p>
             </div>
             <button
               type="button"
@@ -58,10 +57,10 @@ export const FundingActionPanel = ({
         )}
 
         {canAccept && (
-          <div className="space-y-3 rounded-xl bg-[#fdfaf4] border border-[rgba(180,165,140,0.3)] px-4 py-4">
+          <div className="space-y-3 rounded-xl bg-[#fdf8f2] border border-[#ede4d5] px-4 py-4">
             <div>
-              <p className="text-sm font-semibold text-[#0f1117]">Accept the winning lender</p>
-              <p className="text-xs leading-relaxed text-[#7a6f63]">
+              <p className="text-sm font-semibold text-[#1a1208]">Accept the winning lender</p>
+              <p className="text-xs leading-relaxed text-[#6b5b4e]">
                 Decrypt the winning bid id above, enter it here, then accept on chain to lock in the selected lender.
               </p>
             </div>
@@ -79,7 +78,7 @@ export const FundingActionPanel = ({
                 type="button"
                 onClick={() => void onAccept?.()}
                 disabled={acceptBidId === "" || isNaN(Number(acceptBidId)) || Number(acceptBidId) < 0}
-                className="bf-btn-gold shrink-0 text-sm px-5 py-3"
+                className="bf-btn-gold shrink-0 text-sm px-5 py-2.5"
               >
                 {pendingAction === "Accept winning bid" ? "Accepting..." : "Accept lender"}
               </button>
@@ -88,10 +87,10 @@ export const FundingActionPanel = ({
         )}
 
         {canFund && (
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#d4ede6] border border-[#a8d9cc] px-4 py-3">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[rgba(74,124,89,0.08)] border border-[rgba(74,124,89,0.25)] px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-[#1a5c45]">Fund the borrower</p>
-              <p className="text-xs text-[#1a5c45]/70">
+              <p className="text-sm font-semibold text-[#4a7c59]">Fund the borrower</p>
+              <p className="text-xs text-[#4a7c59]/70">
                 You have been selected. The transfer amount is the encrypted winning payout.
               </p>
             </div>
@@ -106,10 +105,10 @@ export const FundingActionPanel = ({
         )}
 
         {canMarkRepaid && (
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdfaf4] border border-[rgba(180,165,140,0.3)] px-4 py-3">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-[#fdf8f2] border border-[#ede4d5] px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-[#0f1117]">Mark as repaid</p>
-              <p className="text-xs text-[#7a6f63]">
+              <p className="text-sm font-semibold text-[#1a1208]">Mark as repaid</p>
+              <p className="text-xs text-[#6b5b4e]">
                 Confirms the repayment transfer to the lender and closes the round.
               </p>
             </div>
