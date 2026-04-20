@@ -141,11 +141,11 @@ export default function DocsPage() {
             <SubSection title="Creating a request">
               <p>Navigate to the Borrower desk and connect the wallet you want to use as the borrower. Fill in:</p>
               <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
-                <li><strong>Invoice amount</strong> — the face value you want to finance, denominated in bfUSD</li>
-                <li><strong>Minimum payout</strong> — the lowest upfront amount you will accept from a lender</li>
-                <li><strong>Bidding window</strong> — how many hours lenders have to submit bids</li>
-                <li><strong>Days until repayment</strong> — when you will repay the winning lender</li>
-                <li><strong>Invoice reference</strong> — a short label hashed on chain for your records</li>
+                <li><strong>Invoice amount:</strong> the face value you want to finance, denominated in bfUSD</li>
+                <li><strong>Minimum payout:</strong> the lowest upfront amount you will accept from a lender</li>
+                <li><strong>Bidding window:</strong> how many hours lenders have to submit bids</li>
+                <li><strong>Days until repayment:</strong> when you will repay the winning lender</li>
+                <li><strong>Invoice reference:</strong> a short label hashed on chain for your records</li>
               </ul>
               <p>
                 Submitting the form encrypts the invoice amount and minimum payout in your browser, then broadcasts a transaction with only ciphertexts. No one can read your terms from the blockchain.
@@ -172,8 +172,8 @@ export default function DocsPage() {
             <SubSection title="Submitting a bid">
               <p>Open requests from borrowers other than your wallet will appear in the Lender desk. For any open request, enter:</p>
               <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
-                <li><strong>Payout now</strong> — what you will send the borrower upfront if selected</li>
-                <li><strong>Repayment at due date</strong> — what you expect back from the borrower at maturity</li>
+                <li><strong>Payout now:</strong> what you will send the borrower upfront if selected</li>
+                <li><strong>Repayment at due date:</strong> what you expect back from the borrower at maturity</li>
               </ul>
               <p>
                 Both values are encrypted in your browser before the transaction. Other lenders cannot see your terms. The contract evaluates your bid against the current leader using FHE arithmetic and silently updates the winner if your offer is better and meets the borrower&apos;s minimum.
@@ -250,8 +250,8 @@ BlindFactorToken:  0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF`}</CodeBlock>
             </p>
             <SubSection title="What we store locally">
               <ul className="list-disc list-inside space-y-1.5 text-[#3a3530]">
-                <li><strong>Wallet connection state</strong> — RainbowKit stores your last connected wallet type in <code>localStorage</code> so the app can reconnect automatically on your next visit. This data never leaves your browser.</li>
-                <li><strong>WalletConnect session</strong> — If you connect via WalletConnect, a temporary session key is stored in <code>localStorage</code> for the duration of your session. It is cleared when you disconnect.</li>
+                <li><strong>Wallet connection state:</strong> RainbowKit stores your last connected wallet type in <code>localStorage</code> so the app can reconnect automatically on your next visit. This data never leaves your browser.</li>
+                <li><strong>WalletConnect session:</strong> If you connect via WalletConnect, a temporary session key is stored in <code>localStorage</code> for the duration of your session. It is cleared when you disconnect.</li>
               </ul>
             </SubSection>
             <SubSection title="What we do not use">

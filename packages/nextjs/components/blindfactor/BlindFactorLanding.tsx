@@ -43,7 +43,7 @@ export const BlindFactorLanding = () => {
             Invoice financing<br /><strong className="font-bold">with nothing exposed.</strong>
           </h1>
           <p className="text-[17px] text-white/70 max-w-[500px] leading-[1.75] mb-10">
-            Post your invoice. Receive competing bids. Accept the best offer. Every number stays encrypted on chain — only your wallet can see your terms.
+            Post your invoice. Receive competing bids. Accept the best offer. Every number stays encrypted on chain. Only your wallet can see your terms.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/borrower" className="bg-white text-[#c45c2e] rounded-lg px-7 py-3 text-[15px] font-bold hover:opacity-90 transition-opacity">
@@ -108,7 +108,7 @@ export const BlindFactorLanding = () => {
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
           <strong className="text-white">All bid amounts, invoice values, and token balances are FHE-encrypted on chain.</strong>
-          {" "}Powered by Zama FHEVM — only authorized wallets can decrypt their own data.
+          {" "}Powered by Zama FHEVM. Only authorized wallets can decrypt their own data.
         </p>
       </div>
 
@@ -128,7 +128,7 @@ export const BlindFactorLanding = () => {
           <div className="rounded-2xl bg-[#f5e6d3] text-[#1a1208] border border-[#ede4d5] p-9">
             <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-55 mb-3">For capital providers</div>
             <h3 className="text-[26px] font-semibold mb-3" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Lend competitively</h3>
-            <p className="text-sm leading-[1.75] opacity-70 mb-7">Browse open financing requests and submit your best sealed offer. Your terms stay private — only the protocol knows who won.</p>
+            <p className="text-sm leading-[1.75] opacity-70 mb-7">Browse open financing requests and submit your best sealed offer. Your terms stay private. Only the protocol knows who won.</p>
             <Link href="/lender" className="inline-block bg-[#c45c2e] text-white rounded-lg px-6 py-3 text-sm font-bold hover:bg-[#8b3a1e] transition-colors">
               Open Lender Desk →
             </Link>

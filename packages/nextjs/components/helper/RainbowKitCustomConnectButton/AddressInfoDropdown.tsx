@@ -34,12 +34,12 @@ export const AddressInfoDropdown = ({ address, ensAvatar, displayName }: Address
   return (
     <>
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">
-        <summary className="btn btn-secondary btn-sm pl-0 pr-2 shadow-md dropdown-toggle gap-0 h-auto!">
+        <summary className="bf-btn-primary text-sm pl-0 pr-2 gap-0 h-auto cursor-pointer list-none">
           <BlockieAvatar address={checkSumAddress} size={30} ensImage={ensAvatar} />
           <span className="ml-2 mr-1">{displayName}</span>
           <ChevronDownIcon className="h-6 w-4 ml-2 sm:ml-0" />
         </summary>
-        <ul className="dropdown-content menu z-2 p-2 mt-2 shadow-center shadow-accent bg-base-200 rounded-box gap-1">
+        <ul className="dropdown-content menu z-2 p-2 mt-2 shadow-[0_4px_24px_rgba(26,18,8,0.12)] bg-[#fffcf7] border border-[#ede4d5] rounded-xl gap-1">
           <NetworkOptions hidden={!selectingNetwork} />
           {allowedNetworks.length > 1 ? (
             <li className={selectingNetwork ? "hidden" : ""}>
