@@ -1,108 +1,93 @@
 # BlindFactor
 
-BlindFactor is a confidential invoice financing dApp built on the Zama Protocol. It lets a borrower publish a financing workflow without exposing invoice size, minimum acceptable payout, lender bids, or repayment terms onchain.
+BlindFactor is a confidential invoice financing protocol built on Ethereum using Zama FHEVM. Borrowers post financing requests without exposing invoice size or minimum terms. Lenders compete with sealed bids. The winning offer is computed on encrypted data and only the authorized wallet can reveal the result.
 
-The MVP proves one complete story:
+Live app: [blindfactor.vercel.app](https://blindfactor.vercel.app)
 
-1. borrower creates a financing request
-2. invoice amount and minimum payout are encrypted
-3. up to three lenders submit encrypted bids
-4. the contract tracks the best valid bid incrementally
-5. borrower decrypts the winner and accepts the selected lender
-6. the winning lender funds the borrower with the confidential settlement token
+## What it does
 
-## Overview
-
-BlindFactor is designed for the Zama Developer Program Builder Track. The app focuses on a finance native use case where FHE is clearly necessary: businesses need invoice liquidity, but public chains leak commercially sensitive deal terms.
-
-This repo contains:
-
-1. `packages/hardhat` with the BlindFactor contracts, tests, and deploy script
-2. `packages/nextjs` with the borrower desk, lender desk, and request detail frontend
-3. `packages/fhevm-sdk` with the relayer helper hooks reused by the app
-4. `.devnotes/` local onboarding notes that stay ignored and are meant for builders only
-
-## Problem
-
-Public smart contracts are a poor fit for invoice financing because they expose:
-
-1. invoice size
-2. borrower financing threshold
-3. lender bids
-4. repayment terms
-5. counterparties and negotiation dynamics
-
-BlindFactor keeps workflow state public for coordination while keeping the money terms encrypted.
+1. Borrower encrypts invoice amount and minimum acceptable payout in the browser
+2. Up to three lenders submit encrypted bids with their offered payout and requested repayment
+3. The contract evaluates bids using FHE arithmetic and tracks the best valid offer without decrypting any value
+4. Borrower decrypts the winning outputs privately, then accepts the selected lender on chain
+5. The winning lender funds the borrower with a confidential bfUSD transfer
+6. Borrower repays the lender at maturity, also as a confidential transfer
 
 ## Why FHE
 
-BlindFactor relies on FHEVM patterns that standard Solidity cannot provide safely:
+Public smart contracts are a poor fit for invoice financing. They expose invoice size, financing thresholds, competitor bids, repayment terms, and counterparty dynamics. BlindFactor uses FHEVM to keep all money terms encrypted while keeping workflow state public for coordination.
 
-1. encrypted `euint64` values for request and bid terms
-2. `FHE.fromExternal` for user supplied encrypted inputs
-3. `FHE.select` for encrypted winner selection logic
-4. explicit ACL grants after every encrypted mutation
-5. user decryption through the relayer for borrower and lender specific views
+Specific FHEVM patterns used:
 
-## Product Flow
+1. `euint64` encrypted values for request and bid terms
+2. `FHE.fromExternal` for user supplied encrypted inputs with proofs
+3. `FHE.select` and `FHE.gt` for encrypted winner selection without decryption
+4. Explicit ACL grants after every encrypted mutation
+5. User decryption through the Zama relayer for borrower and lender specific views
 
-### Borrower
+## Repository structure
 
-1. opens the borrower desk
-2. encrypts `invoiceAmount` and `minPayout`
-3. creates a financing request with a due date and bidding deadline
-4. closes bidding when ready
-5. decrypts the winning bid outputs
-6. accepts the winning bid id
-7. marks the request repaid after funding
+```
+packages/
+  hardhat/      contracts, tests, deploy scripts
+  nextjs/       borrower desk, lender desk, request room, docs frontend
+  fhevm-sdk/    relayer helper hooks shared by the app
+```
 
-### Lender
-
-1. opens the lender desk
-2. decrypts their own confidential balance
-3. submits an encrypted bid with `payoutNow` and `repaymentAtDue`
-4. decrypts only their own bid terms
-5. funds the request only if selected and accepted
-
-## Frontend
-
-The UI uses a warm ivory/ink/gold design system with dark hero sections and gold FHE encryption badges. Full in-app documentation is available at `/docs` and covers borrower guides, lender guides, the settlement token, contract addresses, and legal terms.
-
-## Architecture
-
-High level architecture is documented in [docs/architecture.md](docs/architecture.md).
+## Smart contracts
 
 Main contracts:
 
-1. `packages/hardhat/contracts/BlindFactorMarket.sol`
-2. `packages/hardhat/contracts/BlindFactorToken.sol`
+- `packages/hardhat/contracts/BlindFactorMarket.sol`
+- `packages/hardhat/contracts/BlindFactorToken.sol`
 
-Main frontend entry points:
+Current Sepolia deployment:
 
-1. `packages/nextjs/app/page.tsx`
-2. `packages/nextjs/app/borrower/page.tsx`
-3. `packages/nextjs/app/lender/page.tsx`
-4. `packages/nextjs/app/request/page.tsx` (query-param route: `/request?id=<id>`)
-5. `packages/nextjs/app/docs/page.tsx`
+- `BlindFactorMarket`: `0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB`
+- `BlindFactorToken`: `0xB30b83482df69d1ac5a3c132dfFda86212A028f4`
+
+## Frontend
+
+Built with Next.js, Wagmi, RainbowKit, and the Zama FHEVM relayer SDK.
+
+Main entry points:
+
+- `packages/nextjs/app/page.tsx` — landing page
+- `packages/nextjs/app/borrower/page.tsx` — borrower desk
+- `packages/nextjs/app/lender/page.tsx` — lender desk
+- `packages/nextjs/app/request/page.tsx` — request detail (`/request?id=<id>`)
+- `packages/nextjs/app/docs/page.tsx` — in-app documentation
 
 Frontend contract config and hooks:
 
-1. `packages/nextjs/contracts/blindfactor.ts`
-2. `packages/nextjs/hooks/blindfactor/useBlindFactorMarket.tsx`
-3. `packages/nextjs/hooks/blindfactor/useBlindFactorEncryption.tsx`
-4. `packages/nextjs/hooks/blindfactor/useBlindFactorDecryption.tsx`
+- `packages/nextjs/contracts/blindfactor.ts`
+- `packages/nextjs/hooks/blindfactor/useBlindFactorMarket.tsx`
+- `packages/nextjs/hooks/blindfactor/useBlindFactorEncryption.tsx`
+- `packages/nextjs/hooks/blindfactor/useBlindFactorDecryption.tsx`
+- `packages/nextjs/hooks/blindfactor/useFaucet.ts`
+- `packages/nextjs/hooks/blindfactor/useTokenBalance.ts`
 
-## Local Setup
+## Settlement token
+
+bfUSD is a confidential ERC20 token where all balances and transfer amounts are stored as `euint64` ciphertexts. The market contract moves tokens between parties using `marketTransferFrom` with encrypted amounts. A testnet faucet on the landing page dispenses 10,000 bfUSD per wallet every 24 hours.
+
+Token details:
+
+- Name: BlindFactor USD
+- Symbol: bfUSD
+- Decimals: 6
+
+## Local setup
 
 ```bash
-git clone <your-blindfactor-repo-url>
+git clone https://github.com/Emperoar07/blindfactor
 cd BlindFactor-zama
 pnpm install
 pnpm compile
 pnpm test
 ```
 
-To run the app locally:
+Run locally:
 
 ```bash
 pnpm chain
@@ -110,78 +95,48 @@ pnpm deploy:localhost
 pnpm start
 ```
 
-Notes:
+The frontend is prewired with deterministic local addresses for the default Hardhat deployment path. For a full funded local flow use `pnpm chain` then `pnpm deploy:localhost`.
 
-1. the frontend is prewired with deterministic local addresses for the default hardhat deployment path
-2. for a full funded local flow use `pnpm chain` plus `pnpm deploy:localhost`
-3. `NEXT_PUBLIC_ALCHEMY_API_KEY` is optional because the app falls back to public RPCs
+## Sepolia deployment
 
-## Sepolia Deployment
+The app targets Sepolia as the primary network. Hardhat is excluded from the wallet network picker.
 
-BlindFactor is wired for Sepolia as the Builder Track submission target.
-
-Deploy:
+Deploy the contracts:
 
 ```bash
 pnpm deploy:sepolia
 ```
 
-Then set the frontend env vars:
+Optional env vars (the app falls back to the hardcoded Sepolia addresses if unset):
 
-1. `NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA`
-2. `NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA`
-3. optionally `NEXT_PUBLIC_ALCHEMY_API_KEY`
-4. optionally `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID`
+```
+NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA
+NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA
+NEXT_PUBLIC_ALCHEMY_API_KEY
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID
+```
 
-Current live Sepolia deployment:
-
-1. `BlindFactorMarket`: `0x720dD7325d14B12176EDac06738D9420982cB8cE`
-2. `BlindFactorToken`: `0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF`
-
-The frontend now falls back to these deployed Sepolia addresses by default and still allows env overrides when needed.
-
-## Test Status
-
-Verified in this repo:
-
-1. `pnpm hardhat:compile`
-2. `pnpm test`
-3. `pnpm next:check-types`
-4. `pnpm next:lint`
-5. `pnpm next:build`
+## Test coverage
 
 BlindFactor specific Hardhat tests cover:
 
-1. confidential request creation
-2. lender only bid decryption
-3. incremental winner tracking
-4. borrower winner decryption
-5. acceptance, funding, and repayment flow
-6. confidential token minting and transfer behavior
+1. Confidential request creation
+2. Lender-only bid decryption
+3. Incremental winner tracking across multiple bids
+4. Borrower winner decryption
+5. Acceptance, funding, and repayment flow
+6. Confidential token minting and transfer behavior
+7. Faucet cooldown enforcement
 
-## Demo Walkthrough
+Verified commands:
 
-The demo flow is documented in [docs/demo_walkthrough.md](docs/demo_walkthrough.md).
-
-Short version:
-
-1. connect borrower wallet
-2. create request
-3. connect lender A and lender B
-4. submit encrypted bids
-5. borrower closes bidding
-6. borrower decrypts winning outputs and accepts the winning bid id
-7. accepted lender funds the request
-
-## Pitch Prep
-
-A sample 3 minute pitch script lives in [docs/pitch_script.md](docs/pitch_script.md).
-
-## Current Caveats
-
-1. the deploy script skips demo liquidity minting on the ephemeral `hardhat` network because trivial encryption fails on that path during deployment
-2. funded local demos should use `localhost` deployment, not the one shot ephemeral hardhat deployment
-3. Sepolia frontend addresses are intentionally env driven until live deployment is finalized
+```bash
+pnpm hardhat:compile
+pnpm test
+pnpm next:check-types
+pnpm next:lint
+pnpm next:build
+```
 
 ## License
 

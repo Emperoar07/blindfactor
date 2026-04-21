@@ -203,8 +203,8 @@ export default function DocsPage() {
 
           <Section id="contracts" title="Smart contracts">
             <SubSection title="Sepolia deployment">
-              <CodeBlock>{`BlindFactorMarket: 0x720dD7325d14B12176EDac06738D9420982cB8cE
-BlindFactorToken:  0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF`}</CodeBlock>
+              <CodeBlock>{`BlindFactorMarket: 0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB
+BlindFactorToken:  0xB30b83482df69d1ac5a3c132dfFda86212A028f4`}</CodeBlock>
             </SubSection>
             <SubSection title="BlindFactorMarket">
               <p>
