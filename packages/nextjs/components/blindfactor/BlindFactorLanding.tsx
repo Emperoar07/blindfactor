@@ -101,7 +101,7 @@ export const BlindFactorLanding = () => {
       </section>
 
       {/* ── ENC STRIP ── */}
-      <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-[19px]">
+      <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-[11px]">
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
           <strong className="text-white">All sensitive values are FHE encrypted before leaving your device.</strong>

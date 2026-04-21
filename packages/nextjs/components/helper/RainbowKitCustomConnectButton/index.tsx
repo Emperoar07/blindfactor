@@ -1,7 +1,6 @@
 "use client";
 
 // @refresh reset
-import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -43,18 +42,13 @@ export const RainbowKitCustomConnectButton = () => {
               }
 
               return (
-                <>
-                  <div className="flex flex-col items-center mr-1 text-[#1a1208]">
-                    <Balance address={account.address as Address} className="min-h-0 h-auto" />
-                    <span className="text-xs text-[#6b5b4e]">{chain.name}</span>
-                  </div>
-                  <AddressInfoDropdown
-                    address={account.address as Address}
-                    displayName={account.displayName}
-                    ensAvatar={account.ensAvatar}
-                    blockExplorerAddressLink={blockExplorerAddressLink}
-                  />
-                </>
+                <AddressInfoDropdown
+                  address={account.address as Address}
+                  displayName={account.displayName}
+                  chainName={chain.name}
+                  ensAvatar={account.ensAvatar}
+                  blockExplorerAddressLink={blockExplorerAddressLink}
+                />
               );
             })()}
           </>
