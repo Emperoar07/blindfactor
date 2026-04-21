@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { NetworkOptions } from "./NetworkOptions";
-import { Address, getAddress } from "viem";
+import { Address } from "viem";
 import { useDisconnect } from "wagmi";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import { ArrowsRightLeftIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -16,9 +16,8 @@ type AddressInfoDropdownProps = {
   blockExplorerAddressLink?: string;
 };
 
-export const AddressInfoDropdown = ({ address, ensAvatar, displayName }: AddressInfoDropdownProps) => {
+export const AddressInfoDropdown = ({ displayName }: AddressInfoDropdownProps) => {
   const { disconnect } = useDisconnect();
-  const checkSumAddress = getAddress(address);
 
   const [selectingNetwork, setSelectingNetwork] = useState(false);
   const dropdownRef = useRef<HTMLDetailsElement>(null);

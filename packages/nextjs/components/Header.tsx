@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useRef } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RainbowKitCustomConnectButton } from "~~/components/helper";
 import { useOutsideClick } from "~~/hooks/helper";
-import { useTokenBalance } from "~~/hooks/blindfactor/useTokenBalance";
+
+const BalancePill = dynamic(() => import("~~/components/blindfactor/BalancePill").then(m => m.BalancePill), { ssr: false });
 
 export const Header = () => {
   const pathname = usePathname();
   const burgerMenuRef = useRef<HTMLDetailsElement>(null);
-  const { balance, isDecrypting, isRevealed, reveal, isConnected } = useTokenBalance();
   useOutsideClick(burgerMenuRef, () => {
     burgerMenuRef?.current?.removeAttribute("open");
   });
@@ -77,26 +78,7 @@ export const Header = () => {
             <span className="bf-lock-dot" />
             <span className="text-xs font-semibold text-[#8b3a1e]">FHE Protected</span>
           </div>
-          {isConnected && (
-            <button
-              type="button"
-              onClick={() => void reveal()}
-              disabled={isDecrypting}
-              title="Click to decrypt your bfUSD balance"
-              className="hidden sm:flex items-center gap-1.5 rounded-[6px] border border-[#ede4d5] bg-[#fffcf7] px-3 py-1.5 text-xs font-semibold text-[#1a1208] hover:border-[#c45c2e] hover:text-[#c45c2e] transition-colors cursor-pointer"
-            >
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9a8a7e]">bfUSD</span>
-              <span className="ml-0.5">
-                {isDecrypting
-                  ? "···"
-                  : balance !== null
-                  ? balance
-                  : isRevealed
-                  ? "···"
-                  : "View"}
-              </span>
-            </button>
-          )}
+          <BalancePill />
           <RainbowKitCustomConnectButton />
         </div>
       </div>
