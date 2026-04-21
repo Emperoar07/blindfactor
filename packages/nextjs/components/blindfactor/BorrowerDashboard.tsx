@@ -61,9 +61,9 @@ export const BorrowerDashboard = () => {
       />
 
       {blindFactor.activityMessage ? (
-        <div className="flex items-center gap-3 rounded-xl border border-[#ede4d5] bg-white px-5 py-3.5">
-          <span className="h-2 w-2 rounded-full bg-[#c45c2e] animate-pulse" />
-          <p className="text-sm text-[#1a1208]">{blindFactor.activityMessage}</p>
+        <div className="flex items-start gap-3 rounded-xl border border-[#ede4d5] bg-white px-5 py-3.5 overflow-hidden">
+          <span className="h-2 w-2 mt-1.5 rounded-full bg-[#c45c2e] animate-pulse flex-shrink-0" />
+          <p className="text-sm text-[#1a1208] break-words min-w-0">{blindFactor.activityMessage}</p>
         </div>
       ) : null}
 

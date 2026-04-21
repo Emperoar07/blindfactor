@@ -179,7 +179,8 @@ export const useBlindFactorMarket = () => {
         setActivityMessage(`${label} confirmed onchain.`);
         refresh();
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        const raw = error instanceof Error ? error.message : String(error);
+        const message = raw.length > 160 ? raw.slice(0, 160) + "…" : raw;
         setActivityMessage(`${label} failed: ${message}`);
         throw error;
       } finally {

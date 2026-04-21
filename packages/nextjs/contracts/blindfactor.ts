@@ -46,7 +46,6 @@ export const BLIND_FACTOR_MARKET_ABI = [
   },
   {
     inputs: [
-      { internalType: "uint256", name: "requestId", type: "uint256" },
       { internalType: "externalEuint64", name: "encInvoiceAmount", type: "bytes32" },
       { internalType: "externalEuint64", name: "encMinPayout", type: "bytes32" },
       { internalType: "bytes", name: "inputProof", type: "bytes" },

@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFHEDecrypt, useInMemoryStorage } from "@fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { useFhevm } from "@fhevm-sdk";
 import { BLIND_FACTOR_TOKEN_ABI, getBlindFactorDeployment } from "~~/contracts/blindfactor";
 import { useWagmiEthers } from "~~/hooks/wagmi/useWagmiEthers";
-import { useFhevm } from "@fhevm-sdk";
 
 const INITIAL_MOCK_CHAINS = { 31337: "http://127.0.0.1:8545" } as const;
 
@@ -31,6 +31,7 @@ export const useTokenBalance = () => {
 
   const [handle, setHandle] = useState<`0x${string}` | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const decryptCalledRef = useRef(false);
 
   const { storage: fhevmDecryptionSignatureStorage } = useInMemoryStorage();
 
@@ -53,39 +54,28 @@ export const useTokenBalance = () => {
       ? (Number(rawValue) / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 0 })
       : null;
 
-  const fetchHandle = useCallback(async () => {
+  useEffect(() => {
     if (!address || !tokenAddress || !ethersReadonlyProvider) return;
-    try {
-      const token = new ethers.Contract(tokenAddress, BLIND_FACTOR_TOKEN_ABI, ethersReadonlyProvider);
-      const h = await token.confidentialBalanceOf(address) as `0x${string}`;
-      setHandle(h);
-    } catch {
-      // silently ignore — handle unavailable
-    }
+    const token = new ethers.Contract(tokenAddress, BLIND_FACTOR_TOKEN_ABI, ethersReadonlyProvider);
+    token.confidentialBalanceOf(address)
+      .then((h: `0x${string}`) => setHandle(h))
+      .catch(() => undefined);
   }, [address, tokenAddress, ethersReadonlyProvider]);
 
+  // Trigger decrypt exactly once after revealed becomes true and canDecrypt is ready
   useEffect(() => {
-    void fetchHandle();
-  }, [fetchHandle]);
+    if (!revealed || decryptCalledRef.current || !decryptState.canDecrypt) return;
+    decryptCalledRef.current = true;
+    void decryptState.decrypt();
+  }, [revealed, decryptState.canDecrypt, decryptState.decrypt]);
 
-  const reveal = useCallback(async () => {
-    await fetchHandle();
+  const reveal = useCallback(() => {
     setRevealed(true);
-    if (decryptState.canDecrypt) {
-      await decryptState.decrypt();
-    }
-  }, [fetchHandle, decryptState]);
-
-  useEffect(() => {
-    if (revealed && decryptState.canDecrypt) {
-      void decryptState.decrypt();
-    }
-  }, [revealed, decryptState.canDecrypt]);
+  }, []);
 
   return {
     balance: formatted,
     isDecrypting: decryptState.isDecrypting,
-    hasHandle: !!handle,
     isRevealed: revealed,
     reveal,
     isConnected: !!address,
