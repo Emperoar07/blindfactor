@@ -40,11 +40,11 @@ export const Header = () => {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-3 group">
               {/* Mark: rounded rect, dark burgundy bg, outline hex + filled inner hex */}
-              <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#8b0000] border border-[rgba(232,184,109,0.3)] shadow-[0_0_0_3px_rgba(196,30,58,0.12)] flex-shrink-0">
+              <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#c45c2e] border border-[rgba(232,184,109,0.35)] shadow-[0_0_0_3px_rgba(196,92,46,0.15)] flex-shrink-0">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M10 3L17 7V13L10 17L3 13V7L10 3Z" stroke="#e8b86d" strokeWidth="1.2" fill="none"/>
-                  <path d="M10 7L14 9.5V13L10 15.5L6 13V9.5L10 7Z" fill="#e8b86d" opacity="0.85"/>
-                  <circle cx="10" cy="10" r="1.8" fill="#8b0000"/>
+                  <path d="M10 7L14 9.5V13L10 15.5L6 13V9.5L10 7Z" fill="#e8b86d" opacity="0.9"/>
+                  <circle cx="10" cy="10" r="1.8" fill="#c45c2e"/>
                 </svg>
               </div>
               {/* Wordmark */}

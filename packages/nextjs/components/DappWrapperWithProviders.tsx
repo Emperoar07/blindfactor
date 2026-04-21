@@ -27,11 +27,11 @@ const Footer = () => (
         {/* Brand */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#8b0000] border border-[rgba(232,184,109,0.3)] flex-shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#c45c2e] border border-[rgba(232,184,109,0.35)] flex-shrink-0">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 3L17 7V13L10 17L3 13V7L10 3Z" stroke="#e8b86d" strokeWidth="1.2" fill="none"/>
-                <path d="M10 7L14 9.5V13L10 15.5L6 13V9.5L10 7Z" fill="#e8b86d" opacity="0.85"/>
-                <circle cx="10" cy="10" r="1.8" fill="#8b0000"/>
+                <path d="M10 7L14 9.5V13L10 15.5L6 13V9.5L10 7Z" fill="#e8b86d" opacity="0.9"/>
+                <circle cx="10" cy="10" r="1.8" fill="#c45c2e"/>
               </svg>
             </div>
             <div className="flex flex-col leading-none">
