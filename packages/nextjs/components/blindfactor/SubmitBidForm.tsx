@@ -27,8 +27,8 @@ export const SubmitBidForm = ({
   isPending?: boolean;
   onSubmit: (payload: SubmitBidPayload) => Promise<void>;
 }) => {
-  const [payoutNow, setPayoutNow]           = useState("8200");
-  const [repaymentAtDue, setRepaymentAtDue] = useState("9000");
+  const [payoutNow, setPayoutNow]           = useState("");
+  const [repaymentAtDue, setRepaymentAtDue] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

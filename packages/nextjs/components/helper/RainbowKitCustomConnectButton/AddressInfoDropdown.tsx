@@ -4,7 +4,6 @@ import { Address, getAddress } from "viem";
 import { useDisconnect } from "wagmi";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import { ArrowsRightLeftIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import { BlockieAvatar } from "~~/components/helper";
 import { useOutsideClick } from "~~/hooks/helper";
 import { getTargetNetworks } from "~~/utils/helper";
 
@@ -34,10 +33,9 @@ export const AddressInfoDropdown = ({ address, ensAvatar, displayName }: Address
   return (
     <>
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">
-        <summary className="bf-btn-primary text-sm pl-0 pr-2 gap-0 h-auto cursor-pointer list-none">
-          <BlockieAvatar address={checkSumAddress} size={30} ensImage={ensAvatar} />
-          <span className="ml-2 mr-1">{displayName}</span>
-          <ChevronDownIcon className="h-6 w-4 ml-2 sm:ml-0" />
+        <summary className="bf-btn-primary text-sm px-5 py-2.5 cursor-pointer list-none">
+          <span>{displayName}</span>
+          <ChevronDownIcon className="h-4 w-4 ml-1" />
         </summary>
         <ul className="dropdown-content menu z-2 p-2 mt-2 shadow-[0_4px_24px_rgba(26,18,8,0.12)] bg-[#fffcf7] border border-[#ede4d5] rounded-xl gap-1">
           <NetworkOptions hidden={!selectingNetwork} />

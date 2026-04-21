@@ -60,11 +60,11 @@ export const CreateRequestForm = ({
   isPending?: boolean;
   onSubmit: (payload: CreateRequestPayload) => Promise<void>;
 }) => {
-  const [invoiceAmount, setInvoiceAmount] = useState("10000");
-  const [minPayout, setMinPayout]         = useState("7000");
-  const [biddingHours, setBiddingHours]   = useState("24");
-  const [dueDays, setDueDays]             = useState("30");
-  const [invoiceRef, setInvoiceRef]       = useState("INV BLINDFACTOR 001");
+  const [invoiceAmount, setInvoiceAmount] = useState("");
+  const [minPayout, setMinPayout]         = useState("");
+  const [biddingHours, setBiddingHours]   = useState("");
+  const [dueDays, setDueDays]             = useState("");
+  const [invoiceRef, setInvoiceRef]       = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
