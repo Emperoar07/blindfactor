@@ -22,8 +22,8 @@ export const queryClient = new QueryClient({
 
 const Footer = () => (
   <footer className="border-t border-[#ede4d5] bg-[#1a1208] mt-auto">
-    <div className="mx-auto max-w-7xl px-6 py-10">
-      <div className="grid gap-8 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <div className="mx-auto max-w-7xl px-6 py-4">
+      <div className="grid gap-4 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         {/* Brand */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
@@ -73,7 +73,7 @@ const Footer = () => (
         </div>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
         <p className="text-xs text-[#fffcf7]/30">Confidential invoice financing on Ethereum. Powered by Zama FHEVM.</p>
         <div className="flex items-center gap-4">
           <a href="https://docs.zama.ai/protocol" target="_blank" rel="noopener noreferrer" className="text-xs text-[#fffcf7]/30 transition-colors hover:text-[#e07043]">Zama Protocol</a>

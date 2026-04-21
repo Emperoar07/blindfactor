@@ -59,7 +59,8 @@ export const Header = () => {
             {navLink("/", "Overview")}
             {navLink("/borrower", "Borrower")}
             {navLink("/lender", "Lender")}
-            {navLink("/docs", "Docs")}
+            {navLink("/request", "Request Room")}
+            {pathname === "/" && navLink("/docs", "Docs")}
           </nav>
         </div>
 

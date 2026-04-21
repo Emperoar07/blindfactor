@@ -47,10 +47,10 @@ export const BlindFactorLanding = () => {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/borrower" className="bg-white text-[#c45c2e] rounded-lg px-7 py-3 text-[15px] font-bold hover:opacity-90 transition-opacity">
-              Get Financing →
+              Get Financing
             </Link>
             <Link href="/lender" className="bg-transparent text-white border-2 border-white/30 rounded-lg px-7 py-3 text-[15px] font-medium hover:border-white/60 transition-colors">
-              View Open Requests
+              Become a Lender
             </Link>
           </div>
           {networkWarning ? (
@@ -107,30 +107,30 @@ export const BlindFactorLanding = () => {
       <div className="bg-[#1a1208] flex items-center gap-4 px-6 py-5">
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
-          <strong className="text-white">All bid amounts, invoice values, and token balances are FHE-encrypted on chain.</strong>
-          {" "}Powered by Zama FHEVM. Only authorized wallets can decrypt their own data.
+          <strong className="text-white">All sensitive values are FHE encrypted before leaving your device.</strong>
+          {" "}The smart contract only ever stores and computes on ciphertexts.
         </p>
       </div>
 
       {/* ── ROLE CARDS ── */}
       <section className="mx-auto max-w-7xl px-6 py-[72px]">
-        <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Choose your role</div>
-        <h2 className="text-[34px] font-semibold text-[#1a1208] mb-10" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Borrower or Lender?</h2>
+        <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Get Started</div>
+        <h2 className="text-[34px] font-semibold text-[#1a1208] mb-10" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Choose your role</h2>
         <div className="grid md:grid-cols-2 gap-5">
           <div className="rounded-2xl bg-[#c45c2e] text-white p-9 relative overflow-hidden">
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-55 mb-3">For businesses</div>
-            <h3 className="text-[26px] font-semibold mb-3" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Borrow with confidence</h3>
-            <p className="text-sm leading-[1.75] opacity-70 mb-7">Post your invoice financing request with encrypted terms. Let lenders compete for your business without seeing each other&apos;s bids or yours.</p>
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 mb-3">Borrower</div>
+            <h3 className="text-[22px] font-semibold mb-3" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Finance your invoice</h3>
+            <p className="text-sm leading-[1.75] opacity-80 mb-7">Post a confidential financing request. Set your invoice amount and minimum acceptable payout. Lenders compete to fund you at the best rate without seeing each other&apos;s terms.</p>
             <Link href="/borrower" className="inline-block bg-white text-[#c45c2e] rounded-lg px-6 py-3 text-sm font-bold hover:opacity-90 transition-opacity">
-              Open Borrower Desk →
+              Open Borrower Desk
             </Link>
           </div>
           <div className="rounded-2xl bg-[#f5e6d3] text-[#1a1208] border border-[#ede4d5] p-9">
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-55 mb-3">For capital providers</div>
-            <h3 className="text-[26px] font-semibold mb-3" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Lend competitively</h3>
-            <p className="text-sm leading-[1.75] opacity-70 mb-7">Browse open financing requests and submit your best sealed offer. Your terms stay private. Only the protocol knows who won.</p>
-            <Link href="/lender" className="inline-block bg-[#c45c2e] text-white rounded-lg px-6 py-3 text-sm font-bold hover:bg-[#8b3a1e] transition-colors">
-              Open Lender Desk →
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#6b5b4e] opacity-70 mb-3">Lender</div>
+            <h3 className="text-[22px] font-semibold mb-3 text-[#1a1208]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Earn yield privately</h3>
+            <p className="text-sm leading-[1.75] text-[#6b5b4e] mb-7">Browse open financing requests and submit encrypted bids. The winning offer is computed without revealing your terms to competitors. Fund only if selected.</p>
+            <Link href="/lender" className="inline-block bg-transparent text-[#1a1208] border-2 border-[#ede4d5] rounded-lg px-6 py-3 text-sm font-semibold hover:border-[#c45c2e] hover:text-[#c45c2e] transition-colors">
+              Open Lender Desk
             </Link>
           </div>
         </div>

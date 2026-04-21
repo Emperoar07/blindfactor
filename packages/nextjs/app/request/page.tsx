@@ -15,7 +15,7 @@ const RequestPageClient = () => {
 
 export default function RequestPage() {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8">
+    <div className="mx-auto w-full max-w-[900px] px-6 py-8">
       <Suspense fallback={null}>
         <RequestPageClient />
       </Suspense>
