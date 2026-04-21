@@ -97,13 +97,15 @@ export const DappWrapperWithProviders = ({ children }: { children: React.ReactNo
           })}
         >
           <ProgressBar height="3px" color="#c45c2e" />
-          <div className="flex min-h-screen flex-col bg-[#fdf8f2]">
-            <Header />
-            <main className="relative flex flex-1 flex-col">
-              <InMemoryStorageProvider>{children}</InMemoryStorageProvider>
-            </main>
-            <Footer />
-          </div>
+          <InMemoryStorageProvider>
+            <div className="flex min-h-screen flex-col bg-[#fdf8f2]">
+              <Header />
+              <main className="relative flex flex-1 flex-col">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </InMemoryStorageProvider>
           <Toaster
             toastOptions={{
               style: {
