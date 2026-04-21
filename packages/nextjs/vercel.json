@@ -1,4 +1,7 @@
 {
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "outputDirectory": "out",
   "headers": [
     {
       "source": "/(.*)",
@@ -7,5 +10,11 @@
         { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" }
       ]
     }
+  ],
+  "routes": [
+    { "src": "^/(_next)(.*)", "dest": "/$1$2" },
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/(borrower|lender|docs|request)/?$", "dest": "/$1/index.html" },
+    { "src": ".*", "dest": "/404.html", "status": 404 }
   ]
 }
