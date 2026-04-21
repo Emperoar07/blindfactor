@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useFHEDecrypt, useInMemoryStorage } from "@fhevm-sdk";
+import { useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
 import { ethers } from "ethers";
 
 export type BlindFactorDecryptItem = {

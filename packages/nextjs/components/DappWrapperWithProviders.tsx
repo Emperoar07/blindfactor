@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { InMemoryStorageProvider } from "@fhevm-sdk";
+import { InMemoryStorageProvider } from "fhevm-sdk";
 import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";

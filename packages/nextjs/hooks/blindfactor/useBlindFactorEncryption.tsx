@@ -1,6 +1,6 @@
 "use client";
 
-import { useFHEEncryption } from "@fhevm-sdk";
+import { useFHEEncryption } from "fhevm-sdk";
 import { ethers } from "ethers";
 
 export const useBlindFactorEncryption = (parameters: {

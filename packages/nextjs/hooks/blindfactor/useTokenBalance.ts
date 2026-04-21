@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFHEDecrypt, useInMemoryStorage } from "@fhevm-sdk";
+import { useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
-import { useFhevm } from "@fhevm-sdk";
+import { useFhevm } from "fhevm-sdk";
 import { BLIND_FACTOR_TOKEN_ABI, getBlindFactorDeployment } from "~~/contracts/blindfactor";
 import { useWagmiEthers } from "~~/hooks/wagmi/useWagmiEthers";
 

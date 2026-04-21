@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBlindFactorEncryption } from "./useBlindFactorEncryption";
-import { useFhevm } from "@fhevm-sdk";
+import { useFhevm } from "fhevm-sdk";
 import { ethers } from "ethers";
 import {
   BLIND_FACTOR_MARKET_ABI,
