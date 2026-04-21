@@ -81,26 +81,22 @@ export const BlindFactorLanding = () => {
       <section className="px-12 py-[72px]">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Protocol Flow</div>
         <h2 className="text-[34px] font-semibold text-[#1a1208] mb-10" style={{fontFamily:"'Fraunces',Georgia,serif"}}>How BlindFactor works</h2>
-        <div className="grid gap-0 md:grid-cols-3 border border-[#ede4d5] rounded-2xl overflow-hidden">
+        <div className="grid gap-0 md:grid-cols-3 border border-[#ede4d5] rounded-2xl overflow-hidden divide-x divide-[#ede4d5]">
           <HowItWorksStep
             step="01"
             title="Borrower creates a request"
             body="Invoice amount and minimum payout are encrypted in your browser before the transaction fires. No plaintext ever reaches the chain."
           />
-          <div className="border-l border-[#ede4d5]">
-            <HowItWorksStep
-              step="02"
-              title="Lenders submit sealed bids"
-              body="Up to three lenders bid with encrypted terms. FHE arithmetic finds the best valid offer without revealing any individual bid."
-            />
-          </div>
-          <div className="border-l border-[#ede4d5]">
-            <HowItWorksStep
-              step="03"
-              title="Accept, fund, and repay"
-              body="The borrower decrypts the winner privately, locks the selection on-chain, and the lender funds with a confidential bfUSD transfer."
-            />
-          </div>
+          <HowItWorksStep
+            step="02"
+            title="Lenders submit sealed bids"
+            body="Up to three lenders bid with encrypted terms. FHE arithmetic finds the best valid offer without revealing any individual bid."
+          />
+          <HowItWorksStep
+            step="03"
+            title="Accept, fund, and repay"
+            body="The borrower decrypts the winner privately, locks the selection on-chain, and the lender funds with a confidential bfUSD transfer."
+          />
         </div>
       </section>
 
