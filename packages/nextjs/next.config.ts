@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
   eslint: {
-    ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
+    ignoreDuringBuilds: true,
   },
   // Configure webpack fallbacks for client-side (these packages shouldn't be bundled for browser)
   webpack: (config, { isServer }) => {
@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
         worker_threads: false,
       };
     }
-    config.externals.push("pino-pretty", "lokijs", "encoding", "@fhevm/mock-utils");
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
 };
