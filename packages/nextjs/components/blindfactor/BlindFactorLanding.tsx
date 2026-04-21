@@ -30,7 +30,7 @@ export const BlindFactorLanding = () => {
   return (
     <div className="w-full">
       {/* ── HERO ── */}
-      <section className="bg-[#c45c2e] relative overflow-hidden py-[72px] px-12">
+      <section className="bg-[#c45c2e] relative overflow-hidden py-[58px] px-12">
         {/* decorative circles */}
         <div className="pointer-events-none absolute right-[-80px] top-[-80px] w-[420px] h-[420px] rounded-full border-[90px] border-white/5" />
         <div className="pointer-events-none absolute right-[120px] bottom-[-40px] w-[200px] h-[200px] rounded-full border-[40px] border-white/4" />
@@ -105,7 +105,7 @@ export const BlindFactorLanding = () => {
       </section>
 
       {/* ── ENC STRIP ── */}
-      <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-6">
+      <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-[19px]">
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
           <strong className="text-white">All sensitive values are FHE encrypted before leaving your device.</strong>
