@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FaucetButton } from "./FaucetButton";
 import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
 const HowItWorksStep = ({
@@ -29,17 +30,17 @@ export const BlindFactorLanding = () => {
   return (
     <div className="w-full">
       {/* ── HERO ── */}
-      <section className="bg-[#c45c2e] relative overflow-hidden">
+      <section className="bg-[#c45c2e] relative overflow-hidden py-[72px] px-12">
         {/* decorative circles */}
         <div className="pointer-events-none absolute right-[-80px] top-[-80px] w-[420px] h-[420px] rounded-full border-[90px] border-white/5" />
         <div className="pointer-events-none absolute right-[120px] bottom-[-40px] w-[200px] h-[200px] rounded-full border-[40px] border-white/4" />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-[72px]">
+        <div className="relative max-w-[640px]">
           <div className="inline-flex items-center gap-2 bg-white/12 rounded px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase text-white/90 mb-7">
             <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
             FHE Protected · Ethereum Sepolia
           </div>
-          <h1 className="text-[clamp(38px,6vw,68px)] font-light leading-[1.05] text-white max-w-[640px] mb-6" style={{fontFamily:"'Fraunces',Georgia,serif"}}>
+          <h1 className="text-[clamp(38px,5vw,64px)] font-light leading-[1.05] text-white mb-6" style={{fontFamily:"'Fraunces',Georgia,serif"}}>
             Invoice financing<br /><strong className="font-bold">with nothing exposed.</strong>
           </h1>
           <p className="text-[17px] text-white/70 max-w-[500px] leading-[1.75] mb-10">
@@ -77,7 +78,7 @@ export const BlindFactorLanding = () => {
       </div>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="mx-auto max-w-7xl px-6 py-[72px]">
+      <section className="px-12 py-[72px]">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Protocol Flow</div>
         <h2 className="text-[34px] font-semibold text-[#1a1208] mb-10" style={{fontFamily:"'Fraunces',Georgia,serif"}}>How BlindFactor works</h2>
         <div className="grid gap-0 md:grid-cols-3 border border-[#ede4d5] rounded-2xl overflow-hidden">
@@ -104,7 +105,7 @@ export const BlindFactorLanding = () => {
       </section>
 
       {/* ── ENC STRIP ── */}
-      <div className="bg-[#1a1208] flex items-center gap-4 px-6 py-5">
+      <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-6">
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
           <strong className="text-white">All sensitive values are FHE encrypted before leaving your device.</strong>
@@ -112,8 +113,17 @@ export const BlindFactorLanding = () => {
         </p>
       </div>
 
+      {/* ── FAUCET ── */}
+      <section className="px-12 py-12">
+        <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Testnet</div>
+        <h2 className="text-[28px] font-semibold text-[#1a1208] mb-6" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Get test tokens</h2>
+        <div className="max-w-[520px]">
+          <FaucetButton />
+        </div>
+      </section>
+
       {/* ── ROLE CARDS ── */}
-      <section className="mx-auto max-w-7xl px-6 py-[72px]">
+      <section className="px-12 py-[72px]">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Get Started</div>
         <h2 className="text-[34px] font-semibold text-[#1a1208] mb-10" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Choose your role</h2>
         <div className="grid md:grid-cols-2 gap-5">

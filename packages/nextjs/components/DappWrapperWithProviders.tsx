@@ -22,7 +22,7 @@ export const queryClient = new QueryClient({
 
 const Footer = () => (
   <footer className="border-t border-[#ede4d5] bg-[#1a1208] mt-auto">
-    <div className="mx-auto max-w-7xl px-6 py-4">
+    <div className="mx-auto max-w-7xl px-6 py-2">
       <div className="grid gap-4 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         {/* Brand */}
         <div className="space-y-3">

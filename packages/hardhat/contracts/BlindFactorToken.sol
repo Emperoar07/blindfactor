@@ -9,18 +9,24 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
     error BlindFactorTokenUnauthorizedMarket(address caller);
     error BlindFactorTokenInvalidMarket(address market);
     error BlindFactorTokenInvalidReceiver(address receiver);
+    error BlindFactorTokenFaucetCooldown(address caller, uint256 availableAt);
 
     event ConfidentialTransfer(address indexed from, address indexed to);
     event MarketSet(address indexed market);
+    event FaucetClaim(address indexed to, uint64 amount);
 
     string public constant name = "BlindFactor USD";
     string public constant symbol = "bfUSD";
     uint8 public constant decimals = 6;
 
+    uint64  public constant FAUCET_AMOUNT   = 10_000 * 1e6;
+    uint256 public constant FAUCET_COOLDOWN = 24 hours;
+
     address public market;
     string public tokenURI;
 
-    mapping(address account => euint64) private _balances;
+    mapping(address account => euint64)  private _balances;
+    mapping(address account => uint256)  public  lastFaucetClaim;
     euint64 private _totalSupply;
 
     constructor(address owner_, string memory tokenURI_) Ownable(owner_) {
@@ -53,6 +59,17 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
     function mint(address to, uint64 amount) external onlyOwner returns (euint64 transferred) {
         euint64 encryptedAmount = FHE.asEuint64(amount);
         transferred = _mint(to, encryptedAmount);
+    }
+
+    function faucet() external {
+        uint256 availableAt = lastFaucetClaim[msg.sender] + FAUCET_COOLDOWN;
+        if (block.timestamp < availableAt) {
+            revert BlindFactorTokenFaucetCooldown(msg.sender, availableAt);
+        }
+        lastFaucetClaim[msg.sender] = block.timestamp;
+        euint64 encryptedAmount = FHE.asEuint64(FAUCET_AMOUNT);
+        _mint(msg.sender, encryptedAmount);
+        emit FaucetClaim(msg.sender, FAUCET_AMOUNT);
     }
 
     function confidentialTransfer(

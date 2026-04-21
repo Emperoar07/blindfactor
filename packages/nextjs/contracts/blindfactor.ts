@@ -206,6 +206,34 @@ export const BLIND_FACTOR_TOKEN_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "faucet",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "lastFaucetClaim",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "FAUCET_COOLDOWN",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "FAUCET_AMOUNT",
+    outputs: [{ internalType: "uint64", name: "", type: "uint64" }],
+    stateMutability: "view",
+    type: "function",
+  },
 ] as const;
 
 type BlindFactorDeployment = {
@@ -219,8 +247,8 @@ const LOCAL_DEFAULTS: BlindFactorDeployment = {
 };
 
 const SEPOLIA_DEFAULTS: BlindFactorDeployment = {
-  marketAddress: "0x720dD7325d14B12176EDac06738D9420982cB8cE",
-  tokenAddress: "0x7c8D19A6a4BC7CD7463F609586A2173C05A119eF",
+  marketAddress: "0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB",
+  tokenAddress:  "0xB30b83482df69d1ac5a3c132dfFda86212A028f4",
 };
 
 export const getBlindFactorDeployment = (chainId?: number): BlindFactorDeployment => {
