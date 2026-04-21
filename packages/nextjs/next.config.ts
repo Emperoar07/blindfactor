@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
         worker_threads: false,
       };
     }
-    config.externals.push("pino-pretty", "lokijs", "encoding");
+    config.externals.push("pino-pretty", "lokijs", "encoding", "@fhevm/mock-utils");
     return config;
   },
 };
