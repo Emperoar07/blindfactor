@@ -6,7 +6,7 @@
     "build": "next build",
     "check-types": "tsc --noEmit --incremental",
     "dev": "next dev",
-    "format": "prettier --write . '!(node_modules|.next|contracts)/**/*'",
+    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"contracts/blindfactor.ts\" \"styles/**/*.css\" \"*.{ts,js,json,md}\"",
     "lint": "next lint",
     "serve": "next start",
     "start": "next dev",

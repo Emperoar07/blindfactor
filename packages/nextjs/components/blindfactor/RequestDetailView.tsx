@@ -20,19 +20,17 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
       <div className="overflow-hidden rounded-2xl border border-[#ede4d5] bg-white shadow-[0_4px_24px_rgba(26,18,8,0.06)] p-8">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6b5b4e] hover:text-[#1a1208] mb-5">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           Back to overview
         </Link>
-        <h1 className="text-2xl font-bold text-[#1a1208]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Request room</h1>
+        <h1 className="text-2xl font-bold text-[#1a1208]" style={{ fontFamily: "'Fraunces',Georgia,serif" }}>
+          Request room
+        </h1>
         <p className="mt-2 text-sm text-[#6b5b4e]">
           This request is not available on the currently selected network or has not loaded yet.
         </p>
-        <button
-          type="button"
-          onClick={blindFactor.refresh}
-          className="mt-4 bf-btn-primary text-sm px-5 py-2.5"
-        >
+        <button type="button" onClick={blindFactor.refresh} className="mt-4 bf-btn-primary text-sm px-5 py-2.5">
           Refresh
         </button>
       </div>
@@ -47,15 +45,11 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
       <div className="flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#6b5b4e] hover:text-[#1a1208]">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           Back to overview
         </Link>
-        <button
-          type="button"
-          onClick={blindFactor.refresh}
-          className="bf-btn-outline text-sm px-4 py-2"
-        >
+        <button type="button" onClick={blindFactor.refresh} className="bf-btn-outline text-sm px-4 py-2">
           Refresh
         </button>
       </div>
@@ -97,11 +91,7 @@ export const RequestDetailView = ({ requestId }: { requestId: number }) => {
           pendingAction={blindFactor.pendingAction}
           canClose={isBorrower && request.status === 0}
           onClose={() => blindFactor.closeBidding(request.id)}
-          canAccept={
-            isBorrower &&
-            request.status === 2 &&
-            request.acceptedLender === ZERO_ADDRESS
-          }
+          canAccept={isBorrower && request.status === 2 && request.acceptedLender === ZERO_ADDRESS}
           onAccept={() => blindFactor.acceptWinningBid(request.id, Number(acceptBidId))}
           canFund={isAcceptedLender && request.status === 2}
           onFund={() => blindFactor.fundAcceptedRequest(request.id)}

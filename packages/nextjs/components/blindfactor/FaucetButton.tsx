@@ -19,7 +19,9 @@ export const FaucetButton = () => {
           <p className="text-xs text-[#6b5b4e] mt-0.5">Claim 10,000 bfUSD once every 24 hours to test the protocol.</p>
         </div>
         <div className="text-right shrink-0 ml-4">
-          <div className="text-2xl font-bold text-[#c45c2e]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>10,000</div>
+          <div className="text-2xl font-bold text-[#c45c2e]" style={{ fontFamily: "'Fraunces',Georgia,serif" }}>
+            10,000
+          </div>
           <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#9a8a7e]">bfUSD per claim</div>
         </div>
       </div>
@@ -28,12 +30,7 @@ export const FaucetButton = () => {
         {!isConnected ? (
           <p className="text-xs text-[#6b5b4e] text-center py-2">Connect your wallet to claim test tokens.</p>
         ) : (
-          <button
-            type="button"
-            onClick={claim}
-            disabled={isPending}
-            className="bf-btn-primary w-full"
-          >
+          <button type="button" onClick={claim} disabled={isPending} className="bf-btn-primary w-full">
             {isPending ? "Claiming..." : "Claim 10,000 bfUSD"}
           </button>
         )}
@@ -44,9 +41,7 @@ export const FaucetButton = () => {
           </p>
         )}
         {error && (
-          <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
-            {error}
-          </p>
+          <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">{error}</p>
         )}
       </div>
     </div>

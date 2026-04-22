@@ -29,9 +29,9 @@ Here lender A and lender B submit encrypted bids.
 
 Here the borrower closes bidding and decrypts the winner.
 
-Here the borrower accepts the winning bid id.
+Here the borrower accepts the winning bid id with a public decryption proof, preventing winner substitution.
 
-Here the selected lender funds the request through the confidential settlement token.
+Here the selected lender funds the request through the confidential settlement token, and the app proves the encrypted success flag before marking it funded.
 
 ## Why FHE Matters
 

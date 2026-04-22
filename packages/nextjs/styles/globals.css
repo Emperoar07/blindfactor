@@ -7,19 +7,19 @@
   --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   /* Terra Clay palette */
-  --color-clay:        #c45c2e;
-  --color-terracotta:  #e07043;
-  --color-burnt:       #8b3a1e;
-  --color-sand:        #f5e6d3;
-  --color-cream:       #fdf8f2;
-  --color-linen:       #ede4d5;
-  --color-linen2:      #e0d5c4;
-  --color-moss:        #4a7c59;
-  --color-moss-light:  #d4ede3;
-  --color-ink:         #1a1208;
-  --color-ash:         #6b5b4e;
-  --color-ash2:        #9a8a7e;
-  --color-warm-white:  #fffcf7;
+  --color-clay: #c45c2e;
+  --color-terracotta: #e07043;
+  --color-burnt: #8b3a1e;
+  --color-sand: #f5e6d3;
+  --color-cream: #fdf8f2;
+  --color-linen: #ede4d5;
+  --color-linen2: #e0d5c4;
+  --color-moss: #4a7c59;
+  --color-moss-light: #d4ede3;
+  --color-ink: #1a1208;
+  --color-ash: #6b5b4e;
+  --color-ash2: #9a8a7e;
+  --color-warm-white: #fffcf7;
 }
 
 @plugin "daisyui" {
@@ -29,26 +29,26 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary:         #c45c2e;
+  --color-primary: #c45c2e;
   --color-primary-content: #fffcf7;
-  --color-secondary:       #4a7c59;
+  --color-secondary: #4a7c59;
   --color-secondary-content: #ffffff;
-  --color-accent:          #8b3a1e;
-  --color-accent-content:  #ffffff;
-  --color-neutral:         #1a1208;
+  --color-accent: #8b3a1e;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1a1208;
   --color-neutral-content: #fffcf7;
-  --color-base-100:        #fdf8f2;
-  --color-base-200:        #f5e6d3;
-  --color-base-300:        #ede4d5;
-  --color-base-content:    #1a1208;
-  --color-info:            #3b6fa0;
-  --color-success:         #4a7c59;
-  --color-warning:         #c45c2e;
-  --color-error:           #9b2c2c;
+  --color-base-100: #fdf8f2;
+  --color-base-200: #f5e6d3;
+  --color-base-300: #ede4d5;
+  --color-base-content: #1a1208;
+  --color-info: #3b6fa0;
+  --color-success: #4a7c59;
+  --color-warning: #c45c2e;
+  --color-error: #9b2c2c;
 
   --radius-field: 0.75rem;
-  --radius-box:   1.5rem;
-  --tt-tailw:     6px;
+  --radius-box: 1.5rem;
+  --tt-tailw: 6px;
 }
 
 @layer base {
@@ -85,7 +85,10 @@
     background-color: #fdf8f2;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     margin-bottom: 0.5rem;
     line-height: 1.1;
   }
@@ -118,7 +121,9 @@
   background: #fffcf7;
   border: 1px solid #ede4d5;
   border-radius: 1rem;
-  box-shadow: 0 4px 24px rgba(26,18,8,0.06), 0 1px 4px rgba(26,18,8,0.04);
+  box-shadow:
+    0 4px 24px rgba(26, 18, 8, 0.06),
+    0 1px 4px rgba(26, 18, 8, 0.04);
 }
 
 .bf-card-hero {
@@ -184,7 +189,9 @@
   font-weight: 600;
   letter-spacing: 0.01em;
   border: 1px solid #e0d5c4;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
   cursor: pointer;
   font-family: inherit;
 }

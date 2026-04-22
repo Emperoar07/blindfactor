@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
 import { ethers } from "ethers";
-import { useAccount } from "wagmi";
+import { useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
 import { useFhevm } from "fhevm-sdk";
+import { useAccount } from "wagmi";
 import { BLIND_FACTOR_TOKEN_ABI, getBlindFactorDeployment } from "~~/contracts/blindfactor";
 import { useWagmiEthers } from "~~/hooks/wagmi/useWagmiEthers";
 
@@ -67,7 +67,8 @@ export const useTokenBalance = () => {
   useEffect(() => {
     if (!address || !tokenAddress || !ethersReadonlyProvider) return;
     const token = new ethers.Contract(tokenAddress, BLIND_FACTOR_TOKEN_ABI, ethersReadonlyProvider);
-    token.confidentialBalanceOf(address)
+    token
+      .confidentialBalanceOf(address)
       .then((h: `0x${string}`) => setHandle(h))
       .catch((err: unknown) => console.error("[BalancePill] confidentialBalanceOf failed:", err));
   }, [address, tokenAddress, ethersReadonlyProvider]);

@@ -80,7 +80,7 @@ Only the borrower can decrypt the winning result here. Losing bids stay confiden
 
 Narration:
 
-The borrower now accepts the selected lender using the decrypted winning bid id.
+The borrower now accepts the selected lender using the decrypted winning bid id. BlindFactor verifies that id with a public decryption proof, so the borrower cannot swap in a different lender.
 
 ### 6. Winning lender funds the request
 
@@ -91,7 +91,7 @@ Switch to the winning lender wallet.
 
 Narration:
 
-Funding is visible as state progression, but the transfer amount itself comes from the encrypted winning payout.
+Funding is visible as state progression, but the transfer amount itself comes from the encrypted winning payout. The app proves the encrypted success flag before the request becomes Funded.
 
 ## What To Emphasize
 

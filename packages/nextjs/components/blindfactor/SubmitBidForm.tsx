@@ -6,7 +6,7 @@ import { SubmitBidPayload } from "~~/hooks/blindfactor/useBlindFactorMarket";
 const MAX_UINT64 = 18_446_744_073_709_551_615n;
 
 function validateBidForm(payoutNow: string, repaymentAtDue: string): string | null {
-  const payout    = Number(payoutNow);
+  const payout = Number(payoutNow);
   const repayment = Number(repaymentAtDue);
   if (!Number.isInteger(payout) || payout <= 0) return "Payout now must be a positive whole number.";
   if (BigInt(payout) > MAX_UINT64) return "Payout now exceeds the maximum supported value.";
@@ -27,7 +27,7 @@ export const SubmitBidForm = ({
   isPending?: boolean;
   onSubmit: (payload: SubmitBidPayload) => Promise<void>;
 }) => {
-  const [payoutNow, setPayoutNow]           = useState("");
+  const [payoutNow, setPayoutNow] = useState("");
   const [repaymentAtDue, setRepaymentAtDue] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -35,7 +35,10 @@ export const SubmitBidForm = ({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const error = validateBidForm(payoutNow, repaymentAtDue);
-    if (error) { setValidationError(error); return; }
+    if (error) {
+      setValidationError(error);
+      return;
+    }
     setValidationError(null);
     setSubmitError(null);
     try {
@@ -63,12 +66,22 @@ export const SubmitBidForm = ({
           <label className="block space-y-1.5">
             <span className="bf-label">Payout now (bfUSD)</span>
             <p className="text-xs text-[#6b5b4e]">Amount you will send the borrower upfront</p>
-            <input className="bf-input" inputMode="numeric" value={payoutNow} onChange={e => setPayoutNow(e.target.value)} />
+            <input
+              className="bf-input"
+              inputMode="numeric"
+              value={payoutNow}
+              onChange={e => setPayoutNow(e.target.value)}
+            />
           </label>
           <label className="block space-y-1.5">
             <span className="bf-label">Repayment at due date (bfUSD)</span>
             <p className="text-xs text-[#6b5b4e]">Amount the borrower sends back to you at maturity</p>
-            <input className="bf-input" inputMode="numeric" value={repaymentAtDue} onChange={e => setRepaymentAtDue(e.target.value)} />
+            <input
+              className="bf-input"
+              inputMode="numeric"
+              value={repaymentAtDue}
+              onChange={e => setRepaymentAtDue(e.target.value)}
+            />
           </label>
         </div>
 

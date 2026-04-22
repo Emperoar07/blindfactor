@@ -50,7 +50,8 @@ export const RequestCard = ({ request, children }: { request: BlindFactorRequest
             </div>
             <h3 className="text-xl font-bold text-[#1a1208]">Confidential invoice financing round</h3>
             <p className="text-sm leading-relaxed text-[#6b5b4e]">
-              Workflow state is public. Invoice value, minimum payout, and all bid figures stay encrypted until the authorized wallet decrypts them.
+              Workflow state is public. Invoice value, minimum payout, and all bid figures stay encrypted until the
+              authorized wallet decrypts them.
             </p>
           </div>
 
@@ -80,11 +81,7 @@ export const RequestCard = ({ request, children }: { request: BlindFactorRequest
         </div>
       </div>
 
-      {children ? (
-        <div className="border-t border-[#ede4d5] bg-[#fdf8f2] px-6 py-5 space-y-4">
-          {children}
-        </div>
-      ) : null}
+      {children ? <div className="border-t border-[#ede4d5] bg-[#fdf8f2] px-6 py-5 space-y-4">{children}</div> : null}
     </article>
   );
 };

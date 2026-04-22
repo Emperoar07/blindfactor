@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.27;
 
+// solhint-disable use-natspec, gas-indexed-events, named-parameters-mapping, gas-strict-inequalities
+// solhint-disable gas-custom-errors, const-name-snakecase, max-line-length
+
 import {Ownable2Step, Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {IConfidentialFungibleToken} from "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol";
 import {FHE, ebool, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
-contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
+contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step, IConfidentialFungibleToken {
     error BlindFactorTokenUnauthorizedMarket(address caller);
     error BlindFactorTokenInvalidMarket(address market);
     error BlindFactorTokenInvalidReceiver(address receiver);
     error BlindFactorTokenFaucetCooldown(address caller, uint256 availableAt);
 
-    event ConfidentialTransfer(address indexed from, address indexed to);
     event MarketSet(address indexed market);
     event FaucetClaim(address indexed to, uint64 amount);
 
@@ -19,14 +22,15 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
     string public constant symbol = "bfUSD";
     uint8 public constant decimals = 6;
 
-    uint64  public constant FAUCET_AMOUNT   = 10_000 * 1e6;
+    uint64 public constant FAUCET_AMOUNT = 10_000 * 1e6;
     uint256 public constant FAUCET_COOLDOWN = 24 hours;
 
     address public market;
     string public tokenURI;
 
-    mapping(address account => euint64)  private _balances;
-    mapping(address account => uint256)  public  lastFaucetClaim;
+    mapping(address account => euint64) private _balances;
+    mapping(address holder => mapping(address operator => uint48)) private _operators;
+    mapping(address account => uint256) public lastFaucetClaim;
     euint64 private _totalSupply;
 
     constructor(address owner_, string memory tokenURI_) Ownable(owner_) {
@@ -56,9 +60,17 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         return _balances[account];
     }
 
+    function isOperator(address holder, address spender) public view returns (bool) {
+        return holder == spender || block.timestamp <= _operators[holder][spender];
+    }
+
+    function setOperator(address operator, uint48 until) external {
+        _operators[msg.sender][operator] = until;
+        emit OperatorSet(msg.sender, operator, until);
+    }
+
     function mint(address to, uint64 amount) external onlyOwner returns (euint64 transferred) {
-        euint64 encryptedAmount = FHE.asEuint64(amount);
-        transferred = _mint(to, encryptedAmount);
+        transferred = _mint(to, FHE.asEuint64(amount));
     }
 
     function faucet() external {
@@ -67,8 +79,7 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
             revert BlindFactorTokenFaucetCooldown(msg.sender, availableAt);
         }
         lastFaucetClaim[msg.sender] = block.timestamp;
-        euint64 encryptedAmount = FHE.asEuint64(FAUCET_AMOUNT);
-        _mint(msg.sender, encryptedAmount);
+        _mint(msg.sender, FHE.asEuint64(FAUCET_AMOUNT));
         emit FaucetClaim(msg.sender, FAUCET_AMOUNT);
     }
 
@@ -77,13 +88,74 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) external returns (euint64 transferred) {
-        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
-        transferred = _transfer(msg.sender, to, amount);
+        transferred = _transfer(msg.sender, to, FHE.fromExternal(encryptedAmount, inputProof));
     }
 
     function confidentialTransfer(address to, euint64 amount) external returns (euint64 transferred) {
         require(FHE.isAllowed(amount, msg.sender), "Unauthorized encrypted amount");
         transferred = _transfer(msg.sender, to, amount);
+    }
+
+    function confidentialTransferFrom(
+        address from,
+        address to,
+        externalEuint64 encryptedAmount,
+        bytes calldata inputProof
+    ) external returns (euint64 transferred) {
+        require(isOperator(from, msg.sender), "Unauthorized operator");
+        transferred = _transfer(from, to, FHE.fromExternal(encryptedAmount, inputProof));
+        FHE.allowTransient(transferred, msg.sender);
+    }
+
+    function confidentialTransferFrom(address from, address to, euint64 amount) external returns (euint64 transferred) {
+        require(FHE.isAllowed(amount, msg.sender), "Unauthorized encrypted amount");
+        require(isOperator(from, msg.sender), "Unauthorized operator");
+        transferred = _transfer(from, to, amount);
+        FHE.allowTransient(transferred, msg.sender);
+    }
+
+    function confidentialTransferAndCall(
+        address to,
+        externalEuint64 encryptedAmount,
+        bytes calldata inputProof,
+        bytes calldata
+    ) external returns (euint64 transferred) {
+        transferred = _transfer(msg.sender, to, FHE.fromExternal(encryptedAmount, inputProof));
+        FHE.allowTransient(transferred, msg.sender);
+    }
+
+    function confidentialTransferAndCall(
+        address to,
+        euint64 amount,
+        bytes calldata
+    ) external returns (euint64 transferred) {
+        require(FHE.isAllowed(amount, msg.sender), "Unauthorized encrypted amount");
+        transferred = _transfer(msg.sender, to, amount);
+        FHE.allowTransient(transferred, msg.sender);
+    }
+
+    function confidentialTransferFromAndCall(
+        address from,
+        address to,
+        externalEuint64 encryptedAmount,
+        bytes calldata inputProof,
+        bytes calldata
+    ) external returns (euint64 transferred) {
+        require(isOperator(from, msg.sender), "Unauthorized operator");
+        transferred = _transfer(from, to, FHE.fromExternal(encryptedAmount, inputProof));
+        FHE.allowTransient(transferred, msg.sender);
+    }
+
+    function confidentialTransferFromAndCall(
+        address from,
+        address to,
+        euint64 amount,
+        bytes calldata
+    ) external returns (euint64 transferred) {
+        require(FHE.isAllowed(amount, msg.sender), "Unauthorized encrypted amount");
+        require(isOperator(from, msg.sender), "Unauthorized operator");
+        transferred = _transfer(from, to, amount);
+        FHE.allowTransient(transferred, msg.sender);
     }
 
     function marketTransferFrom(
@@ -111,7 +183,7 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         FHE.allow(_balances[to], to);
         FHE.allowThis(transferred);
         FHE.allow(transferred, to);
-        emit ConfidentialTransfer(address(0), to);
+        emit ConfidentialTransfer(address(0), to, transferred);
     }
 
     function _transfer(address from, address to, euint64 amount) internal returns (euint64 transferred) {
@@ -142,6 +214,6 @@ contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step {
         FHE.allow(transferred, to);
         FHE.allowThis(success);
 
-        emit ConfidentialTransfer(from, to);
+        emit ConfidentialTransfer(from, to, transferred);
     }
 }

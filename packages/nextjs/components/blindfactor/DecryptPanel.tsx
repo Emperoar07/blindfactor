@@ -16,11 +16,11 @@ const DecryptValueTile = ({
 }) => {
   const decrypted = typeof value !== "undefined";
   return (
-    <div className={`rounded-lg border p-3.5 transition ${
-      decrypted
-        ? "border-[rgba(74,124,89,0.3)] bg-[rgba(74,124,89,0.06)]"
-        : "border-[#ede4d5] bg-[#fdf8f2]"
-    }`}>
+    <div
+      className={`rounded-lg border p-3.5 transition ${
+        decrypted ? "border-[rgba(74,124,89,0.3)] bg-[rgba(74,124,89,0.06)]" : "border-[#ede4d5] bg-[#fdf8f2]"
+      }`}
+    >
       <p className="bf-label mb-1">{label}</p>
       <p className="font-mono text-[10px] text-[#9a8a7e] break-all leading-relaxed">
         {handle.slice(0, 18)}...{handle.slice(-6)}
@@ -105,12 +105,7 @@ export const DecryptPanel = ({
             >
               {isLoadingHandles ? "Loading..." : "Load handles"}
             </button>
-            <button
-              type="button"
-              onClick={decrypt}
-              disabled={!canDecrypt}
-              className="bf-btn-gold text-xs px-4 py-2"
-            >
+            <button type="button" onClick={decrypt} disabled={!canDecrypt} className="bf-btn-gold text-xs px-4 py-2">
               {isDecrypting ? "Decrypting..." : "Decrypt"}
             </button>
           </div>
@@ -126,9 +121,7 @@ export const DecryptPanel = ({
             {loadError}
           </p>
         )}
-        {message && !error && (
-          <p className="mt-2 text-xs text-[#4a7c59]">{message}</p>
-        )}
+        {message && !error && <p className="mt-2 text-xs text-[#4a7c59]">{message}</p>}
         {error && (
           <p className="mt-2 text-xs text-[#9b2c2c] bg-[#fde8e8] border border-[#f4b8b8] rounded-lg px-3 py-2">
             Decryption error: {error}
@@ -146,12 +139,7 @@ export const DecryptPanel = ({
           )}
           <div className="grid gap-3 sm:grid-cols-2">
             {items.map(item => (
-              <DecryptValueTile
-                key={item.key}
-                label={item.label}
-                handle={item.handle}
-                value={valuesByKey[item.key]}
-              />
+              <DecryptValueTile key={item.key} label={item.label} handle={item.handle} value={valuesByKey[item.key]} />
             ))}
           </div>
         </div>

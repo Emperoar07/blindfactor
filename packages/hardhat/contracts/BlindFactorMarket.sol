@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.27;
 
+// solhint-disable use-natspec, gas-indexed-events, immutable-vars-naming, named-parameters-mapping
+// solhint-disable gas-increment-by-one, gas-strict-inequalities, gas-custom-errors, max-line-length
+
 import {FHE, ebool, euint32, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 import {BlindFactorToken} from "./BlindFactorToken.sol";
@@ -13,10 +16,12 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         Open,
         BiddingClosed,
         WinnerComputed,
-        Funded,
-        Repaid,
+        FundingProven,
+        RepaymentProven,
         Defaulted,
-        Cancelled
+        Cancelled,
+        FundingSubmitted,
+        RepaymentSubmitted
     }
 
     struct RequestMeta {
@@ -27,7 +32,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         RequestStatus status;
         uint32 bidCount;
         address acceptedLender;
-        bool hasValidBid;
+        bool hasAnyBid;
     }
 
     struct BidMeta {
@@ -65,10 +70,17 @@ contract BlindFactorMarket is ZamaEthereumConfig {
     error BlindFactorNoAcceptedLender(uint256 requestId);
     error BlindFactorTokenUnset();
     error BlindFactorInvalidBidId(uint32 bidId);
-    error BlindFactorNoValidBid(uint256 requestId);
+    error BlindFactorNoBid(uint256 requestId);
     error BlindFactorUnauthorizedHandle(address caller);
+    error BlindFactorInvalidDecryptionProof();
 
-    event RequestCreated(uint256 indexed requestId, address indexed borrower, uint64 dueAt, uint64 biddingEndsAt, bytes32 invoiceRefHash);
+    event RequestCreated(
+        uint256 indexed requestId,
+        address indexed borrower,
+        uint64 dueAt,
+        uint64 biddingEndsAt,
+        bytes32 invoiceRefHash
+    );
     event BidSubmitted(uint256 indexed requestId, uint32 indexed bidId, address indexed lender);
     event BiddingClosed(uint256 indexed requestId);
     event WinningBidAccepted(uint256 indexed requestId, uint32 indexed bidId, address indexed lender);
@@ -175,7 +187,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         FHE.allowThis(bidPrivate.repaymentAtDue);
         FHE.allow(bidPrivate.repaymentAtDue, msg.sender);
 
-        meta.hasValidBid = true;
+        meta.hasAnyBid = true;
         _updateWinningBid(requestId, bidId, meta.borrower, bidPrivate.payoutNow, bidPrivate.repaymentAtDue);
 
         emit BidSubmitted(requestId, bidId, msg.sender);
@@ -190,11 +202,17 @@ contract BlindFactorMarket is ZamaEthereumConfig {
             revert BlindFactorBiddingStillOpen(meta.biddingEndsAt);
         }
 
+        _requestPrivates[requestId].winningBidId = FHE.makePubliclyDecryptable(
+            _requestPrivates[requestId].winningBidId
+        );
+        FHE.allowThis(_requestPrivates[requestId].winningBidId);
+        FHE.allow(_requestPrivates[requestId].winningBidId, meta.borrower);
+
         meta.status = RequestStatus.WinnerComputed;
         emit BiddingClosed(requestId);
     }
 
-    function acceptWinningBid(uint256 requestId, uint32 winningBidIdClear) external {
+    function acceptWinningBid(uint256 requestId, uint32 winningBidIdClear, bytes calldata decryptionProof) external {
         RequestMeta storage meta = _requestMeta(requestId);
         if (msg.sender != meta.borrower) {
             revert BlindFactorNotBorrower(msg.sender);
@@ -205,12 +223,17 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         if (meta.acceptedLender != address(0)) {
             revert BlindFactorNoAcceptedLender(requestId);
         }
-        if (!meta.hasValidBid) {
-            revert BlindFactorNoValidBid(requestId);
+        if (!meta.hasAnyBid) {
+            revert BlindFactorNoBid(requestId);
         }
         if (winningBidIdClear >= meta.bidCount || winningBidIdClear == INVALID_BID_ID) {
             revert BlindFactorInvalidBidId(winningBidIdClear);
         }
+
+        RequestPrivate storage requestPrivate = _requestPrivates[requestId];
+        bytes32[] memory handles = new bytes32[](1);
+        handles[0] = FHE.toBytes32(requestPrivate.winningBidId);
+        FHE.checkSignatures(handles, abi.encode(uint256(winningBidIdClear)), decryptionProof);
 
         BidMeta storage bidMeta = _bidMetas[requestId][winningBidIdClear];
         if (!bidMeta.exists) {
@@ -237,14 +260,38 @@ contract BlindFactorMarket is ZamaEthereumConfig {
 
         RequestPrivate storage requestPrivate = _requestPrivates[requestId];
         FHE.allowTransient(requestPrivate.winningPayout, address(settlementToken));
-        (, ebool fundingSuccess) = settlementToken.marketTransferFrom(msg.sender, meta.borrower, requestPrivate.winningPayout);
-        requestPrivate.fundingSuccess = fundingSuccess;
-        FHE.allowThis(fundingSuccess);
-        FHE.allow(fundingSuccess, meta.borrower);
-        FHE.allow(fundingSuccess, msg.sender);
+        (, ebool fundingSuccess) = settlementToken.marketTransferFrom(
+            msg.sender,
+            meta.borrower,
+            requestPrivate.winningPayout
+        );
+        requestPrivate.fundingSuccess = FHE.makePubliclyDecryptable(fundingSuccess);
+        FHE.allowThis(requestPrivate.fundingSuccess);
+        FHE.allow(requestPrivate.fundingSuccess, meta.borrower);
+        FHE.allow(requestPrivate.fundingSuccess, msg.sender);
 
-        meta.status = RequestStatus.Funded;
+        meta.status = RequestStatus.FundingSubmitted;
         emit RequestFunded(requestId, msg.sender);
+    }
+
+    function proveFunding(uint256 requestId, bool fundingSucceeded, bytes calldata decryptionProof) external {
+        RequestMeta storage meta = _requestMeta(requestId);
+        if (!(msg.sender == meta.borrower || msg.sender == meta.acceptedLender)) {
+            revert BlindFactorUnauthorizedHandle(msg.sender);
+        }
+        if (meta.status != RequestStatus.FundingSubmitted) {
+            revert BlindFactorInvalidStatus(meta.status);
+        }
+
+        RequestPrivate storage requestPrivate = _requestPrivates[requestId];
+        bytes32[] memory handles = new bytes32[](1);
+        handles[0] = FHE.toBytes32(requestPrivate.fundingSuccess);
+        FHE.checkSignatures(handles, abi.encode(uint256(fundingSucceeded ? 1 : 0)), decryptionProof);
+        if (!fundingSucceeded) {
+            revert BlindFactorInvalidDecryptionProof();
+        }
+
+        meta.status = RequestStatus.FundingProven;
     }
 
     function markRepaid(uint256 requestId) external {
@@ -252,7 +299,7 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         if (msg.sender != meta.borrower) {
             revert BlindFactorNotBorrower(msg.sender);
         }
-        if (meta.status != RequestStatus.Funded) {
+        if (meta.status != RequestStatus.FundingProven) {
             revert BlindFactorInvalidStatus(meta.status);
         }
         if (meta.acceptedLender == address(0)) {
@@ -261,14 +308,38 @@ contract BlindFactorMarket is ZamaEthereumConfig {
 
         RequestPrivate storage requestPrivate = _requestPrivates[requestId];
         FHE.allowTransient(requestPrivate.winningRepaymentAtDue, address(settlementToken));
-        (, ebool repaymentSuccess) = settlementToken.marketTransferFrom(msg.sender, meta.acceptedLender, requestPrivate.winningRepaymentAtDue);
-        requestPrivate.repaymentSuccess = repaymentSuccess;
-        FHE.allowThis(repaymentSuccess);
-        FHE.allow(repaymentSuccess, msg.sender);
-        FHE.allow(repaymentSuccess, meta.acceptedLender);
+        (, ebool repaymentSuccess) = settlementToken.marketTransferFrom(
+            msg.sender,
+            meta.acceptedLender,
+            requestPrivate.winningRepaymentAtDue
+        );
+        requestPrivate.repaymentSuccess = FHE.makePubliclyDecryptable(repaymentSuccess);
+        FHE.allowThis(requestPrivate.repaymentSuccess);
+        FHE.allow(requestPrivate.repaymentSuccess, msg.sender);
+        FHE.allow(requestPrivate.repaymentSuccess, meta.acceptedLender);
 
-        meta.status = RequestStatus.Repaid;
+        meta.status = RequestStatus.RepaymentSubmitted;
         emit RequestRepaid(requestId, msg.sender);
+    }
+
+    function proveRepayment(uint256 requestId, bool repaymentSucceeded, bytes calldata decryptionProof) external {
+        RequestMeta storage meta = _requestMeta(requestId);
+        if (!(msg.sender == meta.borrower || msg.sender == meta.acceptedLender)) {
+            revert BlindFactorUnauthorizedHandle(msg.sender);
+        }
+        if (meta.status != RequestStatus.RepaymentSubmitted) {
+            revert BlindFactorInvalidStatus(meta.status);
+        }
+
+        RequestPrivate storage requestPrivate = _requestPrivates[requestId];
+        bytes32[] memory handles = new bytes32[](1);
+        handles[0] = FHE.toBytes32(requestPrivate.repaymentSuccess);
+        FHE.checkSignatures(handles, abi.encode(uint256(repaymentSucceeded ? 1 : 0)), decryptionProof);
+        if (!repaymentSucceeded) {
+            revert BlindFactorInvalidDecryptionProof();
+        }
+
+        meta.status = RequestStatus.RepaymentProven;
     }
 
     function getRequestMeta(uint256 requestId) external view returns (RequestMeta memory) {
@@ -320,7 +391,9 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         return _requestPrivates[requestId].repaymentSuccess;
     }
 
-    function getRequestPrivateHandles(uint256 requestId) external view returns (euint64 invoiceAmount, euint64 minPayout) {
+    function getRequestPrivateHandles(
+        uint256 requestId
+    ) external view returns (euint64 invoiceAmount, euint64 minPayout) {
         RequestMeta storage meta = _requestMeta(requestId);
         if (msg.sender != meta.borrower) {
             revert BlindFactorNotBorrower(msg.sender);
@@ -329,7 +402,10 @@ contract BlindFactorMarket is ZamaEthereumConfig {
         return (requestPrivate.invoiceAmount, requestPrivate.minPayout);
     }
 
-    function getOwnBidHandles(uint256 requestId, uint32 bidId) external view returns (euint64 payoutNow, euint64 repaymentAtDue) {
+    function getOwnBidHandles(
+        uint256 requestId,
+        uint32 bidId
+    ) external view returns (euint64 payoutNow, euint64 repaymentAtDue) {
         _ensureRequestExists(requestId);
         BidMeta storage bidMeta = _bidMetas[requestId][bidId];
         if (bidMeta.lender != msg.sender) {

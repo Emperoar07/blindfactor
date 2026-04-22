@@ -21,11 +21,11 @@ BlindFactor keeps all money terms encrypted while keeping coordination state pub
 
 The borrower navigates to the Borrower desk, connects their wallet, and fills in:
 
-- **Invoice amount** — the face value of the invoice being financed, in bfUSD
-- **Minimum payout** — the lowest upfront amount they will accept from a lender
-- **Bidding window** — how many hours lenders have to submit bids
-- **Days until repayment** — how long before the borrower repays the winning lender
-- **Invoice reference** — a short label hashed on chain for record keeping
+- **Invoice amount** - the face value of the invoice being financed, in bfUSD
+- **Minimum payout** - the lowest upfront amount they will accept from a lender
+- **Bidding window** - how many hours lenders have to submit bids
+- **Days until repayment** - how long before the borrower repays the winning lender
+- **Invoice reference** - a short label hashed on chain for record keeping
 
 Before the transaction is broadcast, the invoice amount and minimum payout are encrypted in the browser using Zama FHEVM. The smart contract receives only ciphertexts. No one reading the chain can see the deal terms.
 
@@ -33,8 +33,8 @@ Before the transaction is broadcast, the invoice amount and minimum payout are e
 
 Lenders open the Lender desk to browse open financing requests. For each request they want to bid on, they enter:
 
-- **Payout now** — what they will send the borrower upfront if selected
-- **Repayment at due date** — what they expect back from the borrower at maturity
+- **Payout now** - what they will send the borrower upfront if selected
+- **Repayment at due date** - what they expect back from the borrower at maturity
 
 Both values are encrypted in the browser before the transaction. The smart contract uses FHE arithmetic to evaluate each new bid against the current best offer without decrypting either value. If the new bid is better and meets the borrower minimum, the contract silently updates the winner. No individual bid is ever revealed.
 
@@ -42,15 +42,15 @@ Both values are encrypted in the browser before the transaction. The smart contr
 
 After the bidding window closes, or earlier if the borrower chooses, they close bidding from the request card. They then use the decrypt panel to reveal the winning bid outputs to their own wallet only. This requires a wallet signature to authorize the decryption.
 
-Once decrypted, the borrower enters the winning bid id into the accept form to lock the selection on chain.
+Once decrypted, the borrower enters the winning bid id into the accept form. The frontend generates a public decryption proof for that bid id before the contract locks the lender on chain, so the borrower cannot substitute a different bid.
 
 ### Step 4. Winning lender funds the request
 
-The accepted lender sees a Fund button on the request card. Clicking it initiates a confidential bfUSD transfer from the lender wallet to the borrower for the encrypted winning payout amount. The transfer amount stays encrypted throughout.
+The accepted lender sees a Fund button on the request card. Clicking it initiates a confidential bfUSD transfer from the lender wallet to the borrower for the encrypted winning payout amount. The app then proves the encrypted transfer success flag before the request reaches the Funded state.
 
 ### Step 5. Borrower repays at maturity
 
-At or before the due date, the borrower uses Mark repaid on the request card. This triggers a confidential bfUSD transfer from the borrower back to the lender for the agreed repayment amount.
+At or before the due date, the borrower uses Mark repaid on the request card. This triggers a confidential bfUSD transfer from the borrower back to the lender for the agreed repayment amount, then proves the encrypted repayment success flag before the request reaches the Repaid state.
 
 ## User guide
 
@@ -109,15 +109,15 @@ Current Sepolia deployment:
 
 ## Frontend entry points
 
-- `packages/nextjs/app/page.tsx` — landing page
-- `packages/nextjs/app/borrower/page.tsx` — borrower desk
-- `packages/nextjs/app/lender/page.tsx` — lender desk
-- `packages/nextjs/app/request/page.tsx` — request detail (`/request?id=<id>`)
-- `packages/nextjs/app/docs/page.tsx` — in app documentation
+- `packages/nextjs/app/page.tsx` - landing page
+- `packages/nextjs/app/borrower/page.tsx` - borrower desk
+- `packages/nextjs/app/lender/page.tsx` - lender desk
+- `packages/nextjs/app/request/page.tsx` - request detail (`/request?id=<id>`)
+- `packages/nextjs/app/docs/page.tsx` - in app documentation
 
 ## Settlement token
 
-bfUSD is a confidential ERC20 token. All balances and transfer amounts are stored as `euint64` ciphertexts. The market contract moves tokens between parties using `marketTransferFrom` with encrypted amounts. Standard balance checks and transfers use FHE comparisons without revealing amounts.
+bfUSD is an OpenZeppelin confidential token interface compatible settlement token. All balances and transfer amounts are stored as `euint64` ciphertexts. The market contract moves tokens between parties using `marketTransferFrom` with encrypted amounts. Standard balance checks and transfers use FHE comparisons without revealing amounts.
 
 Token details:
 

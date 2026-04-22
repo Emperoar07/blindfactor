@@ -21,7 +21,7 @@ export const BLIND_FACTOR_MARKET_ABI = [
           { internalType: "enum BlindFactorMarket.RequestStatus", name: "status", type: "uint8" },
           { internalType: "uint32", name: "bidCount", type: "uint32" },
           { internalType: "address", name: "acceptedLender", type: "address" },
-          { internalType: "bool", name: "hasValidBid", type: "bool" },
+          { internalType: "bool", name: "hasAnyBid", type: "bool" },
         ],
         internalType: "struct BlindFactorMarket.RequestMeta",
         name: "",
@@ -81,6 +81,7 @@ export const BLIND_FACTOR_MARKET_ABI = [
     inputs: [
       { internalType: "uint256", name: "requestId", type: "uint256" },
       { internalType: "uint32", name: "winningBidIdClear", type: "uint32" },
+      { internalType: "bytes", name: "decryptionProof", type: "bytes" },
     ],
     name: "acceptWinningBid",
     outputs: [],
@@ -95,8 +96,30 @@ export const BLIND_FACTOR_MARKET_ABI = [
     type: "function",
   },
   {
+    inputs: [
+      { internalType: "uint256", name: "requestId", type: "uint256" },
+      { internalType: "bool", name: "fundingSucceeded", type: "bool" },
+      { internalType: "bytes", name: "decryptionProof", type: "bytes" },
+    ],
+    name: "proveFunding",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [{ internalType: "uint256", name: "requestId", type: "uint256" }],
     name: "markRepaid",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "requestId", type: "uint256" },
+      { internalType: "bool", name: "repaymentSucceeded", type: "bool" },
+      { internalType: "bytes", name: "decryptionProof", type: "bytes" },
+    ],
+    name: "proveRepayment",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -247,7 +270,7 @@ const LOCAL_DEFAULTS: BlindFactorDeployment = {
 
 const SEPOLIA_DEFAULTS: BlindFactorDeployment = {
   marketAddress: "0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB",
-  tokenAddress:  "0xB30b83482df69d1ac5a3c132dfFda86212A028f4",
+  tokenAddress: "0xB30b83482df69d1ac5a3c132dfFda86212A028f4",
 };
 
 export const getBlindFactorDeployment = (chainId?: number): BlindFactorDeployment => {
@@ -282,4 +305,6 @@ export const BLIND_FACTOR_REQUEST_STATUS = {
   4: "Repaid",
   5: "Defaulted",
   6: "Cancelled",
+  7: "Funding Submitted",
+  8: "Repayment Submitted",
 } as const;

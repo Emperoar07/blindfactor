@@ -15,11 +15,13 @@ export const LenderDashboard = () => {
         <div className="bg-[#1a1208] px-8 py-10 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[rgba(196,92,46,0.15)] border border-[rgba(196,92,46,0.3)]">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="8" stroke="#c45c2e" strokeWidth="1.5"/>
-              <path d="M12 8v4l2.5 2.5" stroke="#c45c2e" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="12" cy="12" r="8" stroke="#c45c2e" strokeWidth="1.5" />
+              <path d="M12 8v4l2.5 2.5" stroke="#c45c2e" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-[#fffcf7]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Lender desk</h1>
+          <h1 className="text-2xl font-bold text-[#fffcf7]" style={{ fontFamily: "'Fraunces',Georgia,serif" }}>
+            Lender desk
+          </h1>
           <p className="mt-2 text-sm text-[#fffcf7]/60">
             Connect a lender wallet to browse open requests, submit encrypted bids, and fund selected positions.
           </p>
@@ -45,9 +47,12 @@ export const LenderDashboard = () => {
                 <span className="bf-lock-dot" />
                 Private bidding
               </span>
-              <h1 className="mt-3 text-2xl font-bold text-[#fffcf7]" style={{fontFamily:"'Fraunces',Georgia,serif"}}>Lender desk</h1>
+              <h1 className="mt-3 text-2xl font-bold text-[#fffcf7]" style={{ fontFamily: "'Fraunces',Georgia,serif" }}>
+                Lender desk
+              </h1>
               <p className="mt-1 text-sm text-[#fffcf7]/60">
-                Bid privately. Compete without revealing your terms to other lenders. Fund only if the borrower selects you.
+                Bid privately. Compete without revealing your terms to other lenders. Fund only if the borrower selects
+                you.
               </p>
             </div>
             <button
@@ -137,7 +142,8 @@ export const LenderDashboard = () => {
                 </div>
                 <div className="px-4 py-4">
                   <p className="text-xs leading-relaxed text-[#6b5b4e]">
-                    Funding is publicly visible as a state change, but the transfer amount comes from the encrypted winning payout. You can only fund if the borrower selected you.
+                    Funding is publicly visible as a state change, but the transfer amount comes from the encrypted
+                    winning payout. You can only fund if the borrower selected you.
                   </p>
                   {request.acceptedLender.toLowerCase() === blindFactor.currentAccount?.toLowerCase() &&
                   request.status === 2 ? (
@@ -150,7 +156,9 @@ export const LenderDashboard = () => {
                       }}
                       className="mt-4 bf-btn-gold w-full text-sm"
                     >
-                      {blindFactor.pendingAction === BLIND_FACTOR_ACTIONS.fundRequest ? "Funding..." : "Fund accepted request"}
+                      {blindFactor.pendingAction === BLIND_FACTOR_ACTIONS.fundRequest
+                        ? "Funding..."
+                        : "Fund accepted request"}
                     </button>
                   ) : (
                     <div className="mt-3 rounded-lg bg-[#fdf8f2] border border-[#ede4d5] px-3 py-2">

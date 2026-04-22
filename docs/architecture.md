@@ -17,9 +17,9 @@ BlindFactor uses a simple monorepo split:
 1. request creation
 2. encrypted bid submission
 3. incremental winner tracking
-4. borrower acceptance
-5. funding state
-6. repayment state
+4. proof backed borrower acceptance
+5. funding submission and proof state
+6. repayment submission and proof state
 
 Public request metadata stores:
 
@@ -60,6 +60,8 @@ BlindFactor uses incremental winner tracking instead of a later full loop:
 
 This keeps the ranking logic private and avoids plaintext branching on encrypted values.
 
+Only the winning bid id is made publicly decryptable after bidding closes. The payout and repayment values remain restricted to authorized users. Acceptance requires a public decryption proof for the winning bid id, which prevents the borrower from substituting a different bid id.
+
 ## ACL Rules
 
 The repo follows strict encrypted handle access rules:
@@ -69,6 +71,7 @@ The repo follows strict encrypted handle access rules:
 3. winning outputs are allowed to borrower plus contract
 4. funding and repayment handoff use transient access only for same transaction execution
 5. every stored encrypted mutation is followed by fresh ACL grants
+6. funding and repayment success flags are made publicly decryptable only after transfer attempts so public status is not marked proven until a KMS proof confirms success
 
 ## Frontend Flow
 

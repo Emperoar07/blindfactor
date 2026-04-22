@@ -33,7 +33,7 @@ export const AddressInfoDropdown = ({ address, displayName, chainName }: Address
   return (
     <>
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">
-        <summary className="bf-btn-primary text-sm px-5 py-2.5 cursor-pointer list-none">
+        <summary className="bf-btn-primary h-9 cursor-pointer list-none px-4 text-sm">
           <span>{displayName}</span>
           <ChevronDownIcon className="h-4 w-4 ml-1" />
         </summary>

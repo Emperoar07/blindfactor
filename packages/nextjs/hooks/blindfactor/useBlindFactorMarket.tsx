@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBlindFactorEncryption } from "./useBlindFactorEncryption";
-import { useFhevm } from "fhevm-sdk";
 import { ethers } from "ethers";
+import { useFhevm } from "fhevm-sdk";
 import {
   BLIND_FACTOR_MARKET_ABI,
   BLIND_FACTOR_REQUEST_STATUS,
@@ -22,7 +22,9 @@ export const BLIND_FACTOR_ACTIONS = {
   closeBidding: "Close bidding",
   acceptWinningBid: "Accept winning bid",
   fundRequest: "Fund request",
+  proveFunding: "Prove funding",
   markRepaid: "Mark repaid",
+  proveRepayment: "Prove repayment",
 } as const;
 
 declare global {
@@ -142,12 +144,10 @@ export const useBlindFactorMarket = () => {
           const meta = await marketReadContract.getRequestMeta(BigInt(requestId));
           const bidLookup =
             currentAccount != null
-              ? await marketReadContract
-                  .getLenderBidId(BigInt(requestId), currentAccount)
-                  .catch((err: unknown) => {
-                    console.error(`[BlindFactor] getLenderBidId failed for request ${requestId}:`, err);
-                    return { bidId: 0, exists: false };
-                  })
+              ? await marketReadContract.getLenderBidId(BigInt(requestId), currentAccount).catch((err: unknown) => {
+                  console.error(`[BlindFactor] getLenderBidId failed for request ${requestId}:`, err);
+                  return { bidId: 0, exists: false };
+                })
               : { bidId: 0, exists: false };
 
           const status = Number(meta.status);
@@ -274,25 +274,64 @@ export const useBlindFactorMarket = () => {
 
   const acceptWinningBid = useCallback(
     async (requestId: number, winningBidIdClear: number) => {
+      if (!instance || !marketReadContract) {
+        throw new Error("FHEVM public decryption is not ready for winner proof generation.");
+      }
+      const winningBidIdHandle = await marketReadContract.getWinningBidIdHandle(BigInt(requestId));
+      const publicDecryption = await instance.publicDecrypt([winningBidIdHandle]);
+      const verifiedBidId = Number(publicDecryption.clearValues[winningBidIdHandle]);
+      if (verifiedBidId !== winningBidIdClear) {
+        throw new Error(`Winning bid proof mismatch. Decrypted winner is ${verifiedBidId}.`);
+      }
       await runWrite(BLIND_FACTOR_ACTIONS.acceptWinningBid, () =>
-        marketWriteContract!.acceptWinningBid(BigInt(requestId), BigInt(winningBidIdClear)),
+        marketWriteContract!.acceptWinningBid(
+          BigInt(requestId),
+          BigInt(winningBidIdClear),
+          publicDecryption.decryptionProof,
+        ),
       );
     },
-    [marketWriteContract, runWrite],
+    [instance, marketReadContract, marketWriteContract, runWrite],
   );
 
   const fundAcceptedRequest = useCallback(
     async (requestId: number) => {
-      await runWrite(BLIND_FACTOR_ACTIONS.fundRequest, () => marketWriteContract!.fundAcceptedRequest(BigInt(requestId)));
+      if (!instance || !marketReadContract) {
+        throw new Error("FHEVM public decryption is not ready for funding proof generation.");
+      }
+      await runWrite(BLIND_FACTOR_ACTIONS.fundRequest, () =>
+        marketWriteContract!.fundAcceptedRequest(BigInt(requestId)),
+      );
+      const fundingSuccessHandle = await marketReadContract.getFundingSuccessHandle(BigInt(requestId));
+      const publicDecryption = await instance.publicDecrypt([fundingSuccessHandle]);
+      const fundingSucceeded = Boolean(publicDecryption.clearValues[fundingSuccessHandle]);
+      if (!fundingSucceeded) {
+        throw new Error("Funding transfer did not move funds. Check the accepted lender bfUSD balance.");
+      }
+      await runWrite(BLIND_FACTOR_ACTIONS.proveFunding, () =>
+        marketWriteContract!.proveFunding(BigInt(requestId), true, publicDecryption.decryptionProof),
+      );
     },
-    [marketWriteContract, runWrite],
+    [instance, marketReadContract, marketWriteContract, runWrite],
   );
 
   const markRepaid = useCallback(
     async (requestId: number) => {
+      if (!instance || !marketReadContract) {
+        throw new Error("FHEVM public decryption is not ready for repayment proof generation.");
+      }
       await runWrite(BLIND_FACTOR_ACTIONS.markRepaid, () => marketWriteContract!.markRepaid(BigInt(requestId)));
+      const repaymentSuccessHandle = await marketReadContract.getRepaymentSuccessHandle(BigInt(requestId));
+      const publicDecryption = await instance.publicDecrypt([repaymentSuccessHandle]);
+      const repaymentSucceeded = Boolean(publicDecryption.clearValues[repaymentSuccessHandle]);
+      if (!repaymentSucceeded) {
+        throw new Error("Repayment transfer did not move funds. Check the borrower bfUSD balance.");
+      }
+      await runWrite(BLIND_FACTOR_ACTIONS.proveRepayment, () =>
+        marketWriteContract!.proveRepayment(BigInt(requestId), true, publicDecryption.decryptionProof),
+      );
     },
-    [marketWriteContract, runWrite],
+    [instance, marketReadContract, marketWriteContract, runWrite],
   );
 
   const getRequestById = useCallback(

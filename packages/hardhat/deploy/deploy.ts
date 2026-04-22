@@ -35,7 +35,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       }
     }
   } else {
-    console.log("Skipping demo liquidity mint on ephemeral hardhat network; use localhost or Sepolia deploy for funded wallets.");
+    console.log(
+      "Skipping demo liquidity mint on ephemeral hardhat network; use localhost or Sepolia deploy for funded wallets.",
+    );
   }
 
   console.log(`BlindFactorToken: ${deployedBlindFactorToken.address}`);

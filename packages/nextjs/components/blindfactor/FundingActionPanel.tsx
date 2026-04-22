@@ -42,7 +42,8 @@ export const FundingActionPanel = ({
       <div className="border-b border-[#ede4d5] bg-[#f5e6d3] px-5 py-3.5">
         <h4 className="text-sm font-bold text-[#1a1208]">Request actions</h4>
         <p className="text-xs leading-relaxed text-[#6b5b4e]">
-          Lifecycle transitions happen here. The borrower controls closing, accepting, and repaying. The accepted lender controls funding.
+          Lifecycle transitions happen here. The borrower controls closing, accepting, and repaying. The accepted lender
+          controls funding.
         </p>
       </div>
 
@@ -68,7 +69,8 @@ export const FundingActionPanel = ({
             <div>
               <p className="text-sm font-semibold text-[#1a1208]">Accept the winning lender</p>
               <p className="text-xs leading-relaxed text-[#6b5b4e]">
-                Decrypt the winning bid id above, enter it here, then accept on chain to lock in the selected lender.
+                Decrypt the winning bid id above, enter it here, then accept. The app submits a proof so the contract
+                rejects substituted winners.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -98,7 +100,8 @@ export const FundingActionPanel = ({
             <div>
               <p className="text-sm font-semibold text-[#4a7c59]">Fund the borrower</p>
               <p className="text-xs text-[#4a7c59]/70">
-                You have been selected. The transfer amount is the encrypted winning payout.
+                You have been selected. The transfer amount is encrypted, and funding is proven before the request
+                becomes Funded.
               </p>
             </div>
             <button
@@ -116,7 +119,7 @@ export const FundingActionPanel = ({
             <div>
               <p className="text-sm font-semibold text-[#1a1208]">Mark as repaid</p>
               <p className="text-xs text-[#6b5b4e]">
-                Confirms the repayment transfer to the lender and closes the round.
+                Submits the encrypted repayment transfer, then proves success before the request becomes Repaid.
               </p>
             </div>
             <button

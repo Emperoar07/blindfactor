@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -8,9 +8,7 @@ const RequestPageClient = () => {
   const searchParams = useSearchParams();
   const requestId = Number(searchParams.get("id") ?? "");
 
-  return (
-    <RequestDetailView requestId={Number.isFinite(requestId) ? requestId : NaN} />
-  );
+  return <RequestDetailView requestId={Number.isFinite(requestId) ? requestId : NaN} />;
 };
 
 export default function RequestPage() {
