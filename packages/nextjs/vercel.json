@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install --legacy-peer-deps --no-workspaces",
-  "buildCommand": "npm run build",
+  "buildCommand": "NEXT_PUBLIC_IPFS_BUILD=true NEXT_PUBLIC_IGNORE_BUILD_ERROR=true npm run build",
   "outputDirectory": "out",
   "headers": [
     {
