@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/helper/contract";
 const deployedContracts = {
   11155111: {
     BlindFactorMarket: {
-      address: "0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB",
+      address: "0xE353897f684c1db59947df1694Ca27E4fEa795ca",
       abi: [
         {
           inputs: [
@@ -873,10 +873,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 10703530,
+      deployedOnBlock: 10711628,
     },
     BlindFactorToken: {
-      address: "0xB30b83482df69d1ac5a3c132dfFda86212A028f4",
+      address: "0xd4a053987D28407CDDDeB8882246AaCd432e7D07",
       abi: [
         {
           inputs: [
@@ -1712,8 +1712,31 @@ const deployedContracts = {
         pendingOwner: "@openzeppelin/contracts/access/Ownable2Step.sol",
         renounceOwnership: "@openzeppelin/contracts/access/Ownable2Step.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable2Step.sol",
+        confidentialBalanceOf:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        confidentialTotalSupply:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        confidentialTransfer:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        confidentialTransferAndCall:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        confidentialTransferFrom:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        confidentialTransferFromAndCall:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        decimals:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        isOperator:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        name: "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        setOperator:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        symbol:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
+        tokenURI:
+          "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol",
       },
-      deployedOnBlock: 10703529,
+      deployedOnBlock: 10711627,
     },
   },
 } as const;

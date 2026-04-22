@@ -25,7 +25,7 @@ export const BlindFactorLanding = () => {
 
   return (
     <div className="w-full">
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section className="bg-[#c45c2e] relative overflow-hidden py-[58px] px-12">
         {/* decorative circles */}
         <div className="pointer-events-none absolute right-[-80px] top-[-80px] w-[420px] h-[420px] rounded-full border-[90px] border-white/5" />
@@ -34,7 +34,7 @@ export const BlindFactorLanding = () => {
         <div className="relative max-w-[640px]">
           <div className="inline-flex items-center gap-2 bg-white/12 rounded px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase text-white/90 mb-7">
             <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-            FHE Protected · Ethereum Sepolia
+            FHE Protected | Ethereum Sepolia
           </div>
           <h1
             className="text-[clamp(38px,5vw,64px)] font-light leading-[1.05] text-white mb-6"
@@ -70,11 +70,11 @@ export const BlindFactorLanding = () => {
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
+      {/* STATS BAR */}
       <div className="grid grid-cols-2 md:grid-cols-4 border-b border-[#ede4d5]">
         {[
           { label: "Open Requests", value: String(openCount) },
-          { label: "Completed Rounds", value: String(totalCount) },
+          { label: "Total Requests", value: String(totalCount) },
           { label: "Settlement Token", value: "bfUSD" },
           { label: "Network", value: chainId === 11155111 ? "Sepolia" : chainId === 31337 ? "Local" : "..." },
         ].map(s => (
@@ -90,7 +90,7 @@ export const BlindFactorLanding = () => {
         ))}
       </div>
 
-      {/* ── HOW IT WORKS ── */}
+      {/* HOW IT WORKS */}
       <section className="px-12 py-[72px]">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Protocol Flow</div>
         <h2
@@ -103,7 +103,7 @@ export const BlindFactorLanding = () => {
           <HowItWorksStep
             step="01"
             title="Borrower creates a request"
-            body="Invoice amount and minimum payout are encrypted in your browser before the transaction fires. No plaintext ever reaches the chain."
+            body="Invoice amount and minimum payout are encrypted in your browser before the transaction is sent. No plaintext ever reaches the chain."
           />
           <HowItWorksStep
             step="02"
@@ -113,12 +113,12 @@ export const BlindFactorLanding = () => {
           <HowItWorksStep
             step="03"
             title="Accept, fund, and repay"
-            body="The borrower decrypts the winner privately, locks the selection on-chain, and the lender funds with a confidential bfUSD transfer."
+            body="The borrower decrypts the winner privately, locks the selection on chain, and the lender funds with a confidential bfUSD transfer."
           />
         </div>
       </section>
 
-      {/* ── ENC STRIP ── */}
+      {/* ENCRYPTION STRIP */}
       <div className="bg-[#1a1208] flex items-center gap-4 px-12 py-[11px]">
         <span className="w-2 h-2 rounded-full bg-[#e07043] animate-pulse flex-shrink-0" />
         <p className="text-sm text-white/65">
@@ -127,7 +127,7 @@ export const BlindFactorLanding = () => {
         </p>
       </div>
 
-      {/* ── FAUCET ── */}
+      {/* FAUCET */}
       <section className="px-12 py-12">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Testnet</div>
         <h2
@@ -141,7 +141,7 @@ export const BlindFactorLanding = () => {
         </div>
       </section>
 
-      {/* ── ROLE CARDS ── */}
+      {/* ROLE CARDS */}
       <section className="px-12 py-[72px]">
         <div className="text-[11px] font-bold tracking-[0.22em] uppercase text-[#c45c2e] mb-2">Get Started</div>
         <h2

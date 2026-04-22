@@ -35,7 +35,7 @@ Here the selected lender funds the request through the confidential settlement t
 
 ## Why FHE Matters
 
-This is not privacy theatre.
+This is not privacy theater.
 
 The chain still verifies execution, but it does not expose the deal terms that make invoice financing commercially sensitive in the first place.
 

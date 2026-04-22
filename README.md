@@ -42,7 +42,7 @@ Both values are encrypted in the browser before the transaction. The smart contr
 
 After the bidding window closes, or earlier if the borrower chooses, they close bidding from the request card. They then use the decrypt panel to reveal the winning bid outputs to their own wallet only. This requires a wallet signature to authorize the decryption.
 
-Once decrypted, the borrower enters the winning bid id into the accept form. The frontend generates a public decryption proof for that bid id before the contract locks the lender on chain, so the borrower cannot substitute a different bid.
+Once decrypted, the borrower enters the winning bid id into the accept form. The frontend generates a public decryption proof for that bid id before the contract locks the lender on chain, so the borrower cannot substitute a different lender.
 
 ### Step 4. Winning lender funds the request
 
@@ -104,8 +104,8 @@ packages/
 
 Current Sepolia deployment:
 
-- BlindFactorMarket: `0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB`
-- BlindFactorToken: `0xB30b83482df69d1ac5a3c132dfFda86212A028f4`
+- BlindFactorMarket: `0xE353897f684c1db59947df1694Ca27E4fEa795ca`
+- BlindFactorToken: `0xd4a053987D28407CDDDeB8882246AaCd432e7D07`
 
 ## Frontend entry points
 
@@ -130,7 +130,7 @@ Token details:
 
 ```bash
 git clone https://github.com/Emperoar07/blindfactor
-cd BlindFactor-zama
+cd blindfactor
 pnpm install
 pnpm compile
 pnpm test

@@ -71,9 +71,9 @@ export default function DocsPage() {
 
           <Section id="overview" title="Overview">
             <p>
-              BlindFactor is a confidential invoice financing marketplace deployed on Ethereum. It lets businesses raise
-              working capital by posting financing requests, while lenders compete to fund those requests by submitting
-              sealed bids.
+              BlindFactor is a confidential invoice financing marketplace deployed on Ethereum Sepolia. It lets
+              businesses raise working capital by posting financing requests, while lenders compete to fund those
+              requests by submitting sealed bids.
             </p>
             <p>
               The key property is that the economics stay private. Invoice amounts, minimum acceptable payouts,
@@ -249,8 +249,8 @@ export default function DocsPage() {
 
           <Section id="contracts" title="Smart contracts">
             <SubSection title="Sepolia deployment">
-              <CodeBlock>{`BlindFactorMarket: 0x983e37af5797B69479fCB6B8Dc5dE88A21C57eeB
-BlindFactorToken:  0xB30b83482df69d1ac5a3c132dfFda86212A028f4`}</CodeBlock>
+              <CodeBlock>{`BlindFactorMarket: 0xE353897f684c1db59947df1694Ca27E4fEa795ca
+BlindFactorToken:  0xd4a053987D28407CDDDeB8882246AaCd432e7D07`}</CodeBlock>
             </SubSection>
             <SubSection title="BlindFactorMarket">
               <p>
@@ -331,14 +331,14 @@ BlindFactorToken:  0xB30b83482df69d1ac5a3c132dfFda86212A028f4`}</CodeBlock>
             <p>
               Because this application is entirely client-side and blockchain-based, we do not have the ability to link
               your browsing behavior to your identity. You can clear all locally stored data at any time through your
-              browser settings without affecting your on-chain assets.
+              browser settings without affecting your on chain assets.
             </p>
           </Section>
 
           <Section id="terms" title="Terms of use">
             <p>
-              BlindFactor is experimental software deployed on Ethereum. Use it at your own risk. The software is
-              provided as is, without warranty of any kind, express or implied.
+              BlindFactor is experimental software deployed on Ethereum Sepolia. Use it at your own risk. The software
+              is provided as is, without warranty of any kind, express or implied.
             </p>
             <p>
               This application is not a licensed financial institution and does not provide financial advice, credit
@@ -347,7 +347,7 @@ BlindFactorToken:  0xB30b83482df69d1ac5a3c132dfFda86212A028f4`}</CodeBlock>
             </p>
             <p>
               You are responsible for complying with all laws applicable to your jurisdiction. The developers of
-              BlindFactor accept no liability for losses arising from use of the protocol, including but not limited to
+              BlindFactor accepts no liability for losses arising from use of the protocol, including but not limited to
               smart contract bugs, FHE library issues, or market conditions.
             </p>
             <p>
