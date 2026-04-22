@@ -7,7 +7,7 @@ import { FundingActionPanel } from "./FundingActionPanel";
 import { RequestCard } from "./RequestCard";
 import { ZERO_ADDRESS } from "~~/contracts/constants";
 import { RainbowKitCustomConnectButton } from "~~/components/helper/RainbowKitCustomConnectButton";
-import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
+import { BLIND_FACTOR_ACTIONS, useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
 const EmptyState = () => (
   <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#ede4d5] bg-[#fdf8f2] py-14 px-6 text-center">
@@ -55,8 +55,8 @@ export const BorrowerDashboard = () => {
   return (
     <div className="space-y-7">
       <CreateRequestForm
-        disabled={!blindFactor.hasDeployment || blindFactor.pendingAction.length > 0}
-        isPending={blindFactor.pendingAction === "Create request"}
+        disabled={!blindFactor.hasDeployment || blindFactor.pendingAction !== ""}
+        isPending={blindFactor.pendingAction === BLIND_FACTOR_ACTIONS.createRequest}
         onSubmit={blindFactor.createRequest}
       />
 

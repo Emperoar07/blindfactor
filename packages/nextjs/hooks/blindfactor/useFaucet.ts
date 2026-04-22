@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { BLIND_FACTOR_TOKEN_ABI, getBlindFactorDeployment } from "~~/contracts/blindfactor";
 
+const shortError = (message: string) => (message.length > 120 ? `${message.slice(0, 120)}...` : message);
+
 export const useFaucet = () => {
   const { address, chainId } = useAccount();
   const { data: walletClient } = useWalletClient();
@@ -21,12 +23,12 @@ export const useFaucet = () => {
     setMessage(null);
     setError(null);
     try {
-      const lastClaim = await publicClient.readContract({
+      const lastClaim = (await publicClient.readContract({
         address: tokenAddress,
         abi: BLIND_FACTOR_TOKEN_ABI,
         functionName: "lastFaucetClaim",
         args: [address],
-      }) as bigint;
+      })) as bigint;
 
       const cooldown = 86400n;
       const now = BigInt(Math.floor(Date.now() / 1000));
@@ -46,12 +48,9 @@ export const useFaucet = () => {
       await publicClient.waitForTransactionReceipt({ hash });
       setMessage("10,000 bfUSD sent to your wallet. Ready to use.");
     } catch (err: unknown) {
+      console.error("[Faucet] claim failed:", err);
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("FaucetCooldown")) {
-        setError("Already claimed today. Come back in 24 hours.");
-      } else {
-        setError(msg.slice(0, 120));
-      }
+      setError(msg.includes("FaucetCooldown") ? "Already claimed today. Come back in 24 hours." : shortError(msg));
     } finally {
       setIsPending(false);
     }

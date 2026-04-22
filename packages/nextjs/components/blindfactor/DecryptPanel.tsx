@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ethers } from "ethers";
+import type { FhevmInstance } from "fhevm-sdk";
 import { type BlindFactorDecryptItem, useBlindFactorDecryption } from "~~/hooks/blindfactor/useBlindFactorDecryption";
 
 const DecryptValueTile = ({
@@ -51,7 +52,7 @@ export const DecryptPanel = ({
 }: {
   title: string;
   description: string;
-  instance: any;
+  instance: FhevmInstance | undefined;
   ethersSigner: ethers.JsonRpcSigner | undefined;
   chainId: number | undefined;
   loadItems: () => Promise<BlindFactorDecryptItem[]>;

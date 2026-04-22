@@ -14,6 +14,13 @@ type FundingActionPanelProps = {
   onMarkRepaid?: () => Promise<void>;
 };
 
+const runPanelAction = (action?: () => Promise<void>) => {
+  if (!action) return;
+  action().catch(error => {
+    console.error("[BlindFactor] request action failed:", error);
+  });
+};
+
 export const FundingActionPanel = ({
   acceptBidId,
   onAcceptBidIdChange,
@@ -48,7 +55,7 @@ export const FundingActionPanel = ({
             </div>
             <button
               type="button"
-              onClick={() => void onClose?.()}
+              onClick={() => runPanelAction(onClose)}
               className="bf-btn-outline shrink-0 text-sm px-4 py-2"
             >
               {pendingAction === "Close bidding" ? "Closing..." : "Close bidding"}
@@ -76,7 +83,7 @@ export const FundingActionPanel = ({
               />
               <button
                 type="button"
-                onClick={() => void onAccept?.()}
+                onClick={() => runPanelAction(onAccept)}
                 disabled={acceptBidId === "" || isNaN(Number(acceptBidId)) || Number(acceptBidId) < 0}
                 className="bf-btn-gold shrink-0 text-sm px-5 py-2.5"
               >
@@ -96,7 +103,7 @@ export const FundingActionPanel = ({
             </div>
             <button
               type="button"
-              onClick={() => void onFund?.()}
+              onClick={() => runPanelAction(onFund)}
               className="bf-btn-primary shrink-0 text-sm px-4 py-2"
             >
               {pendingAction === "Fund request" ? "Funding..." : "Fund request"}
@@ -114,7 +121,7 @@ export const FundingActionPanel = ({
             </div>
             <button
               type="button"
-              onClick={() => void onMarkRepaid?.()}
+              onClick={() => runPanelAction(onMarkRepaid)}
               className="bf-btn-primary shrink-0 text-sm px-4 py-2"
             >
               {pendingAction === "Mark repaid" ? "Marking..." : "Mark repaid"}

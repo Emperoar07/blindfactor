@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
+import { type FhevmInstance, useFHEDecrypt, useInMemoryStorage } from "fhevm-sdk";
 import { ethers } from "ethers";
 
 export type BlindFactorDecryptItem = {
@@ -12,7 +12,7 @@ export type BlindFactorDecryptItem = {
 };
 
 export const useBlindFactorDecryption = (parameters: {
-  instance: any;
+  instance: FhevmInstance | undefined;
   ethersSigner: ethers.JsonRpcSigner | undefined;
   chainId: number | undefined;
   items: BlindFactorDecryptItem[];

@@ -2,16 +2,11 @@
 
 // @refresh reset
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
-import { Balance } from "../Balance";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Address } from "viem";
+import { isAddress } from "viem";
 import { useTargetNetwork } from "~~/hooks/helper/useTargetNetwork";
-import { getBlockExplorerAddressLink } from "~~/utils/helper";
 
-/**
- * Custom Wagmi Connect Button (watch balance + custom design)
- */
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
 
@@ -19,9 +14,6 @@ export const RainbowKitCustomConnectButton = () => {
     <ConnectButton.Custom>
       {({ account, chain, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
-        const blockExplorerAddressLink = account
-          ? getBlockExplorerAddressLink(targetNetwork, account.address)
-          : undefined;
 
         return (
           <>
@@ -42,20 +34,15 @@ export const RainbowKitCustomConnectButton = () => {
                 return <WrongNetworkDropdown />;
               }
 
+              const checkedAddress = account.address;
+              if (!isAddress(checkedAddress)) return null;
+
               return (
-                <>
-                  <div className="flex flex-col items-center mr-1 text-[#1a1208]">
-                    <Balance address={account.address as Address} className="min-h-0 h-auto" />
-                    <span className="text-xs text-[#6b5b4e]">{chain.name}</span>
-                  </div>
-                  <AddressInfoDropdown
-                    address={account.address as Address}
-                    displayName={account.displayName}
-                    chainName={chain.name}
-                    ensAvatar={account.ensAvatar}
-                    blockExplorerAddressLink={blockExplorerAddressLink}
-                  />
-                </>
+                <AddressInfoDropdown
+                  address={checkedAddress}
+                  displayName={account.displayName}
+                  chainName={chain.name}
+                />
               );
             })()}
           </>

@@ -16,6 +16,21 @@ const INITIAL_MOCK_CHAINS = {
   31337: "http://127.0.0.1:8545",
 } as const;
 
+export const BLIND_FACTOR_ACTIONS = {
+  createRequest: "Create request",
+  submitBid: "Submit bid",
+  closeBidding: "Close bidding",
+  acceptWinningBid: "Accept winning bid",
+  fundRequest: "Fund request",
+  markRepaid: "Mark repaid",
+} as const;
+
+declare global {
+  interface Window {
+    ethereum?: ethers.Eip1193Provider;
+  }
+}
+
 export type BlindFactorRequest = {
   id: number;
   borrower: string;
@@ -57,7 +72,11 @@ export const useBlindFactorMarket = () => {
 
   const walletProvider = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    return (window as any).ethereum;
+    if (!window.ethereum) {
+      console.info("[BlindFactor] No injected wallet provider detected.");
+      return undefined;
+    }
+    return window.ethereum;
   }, []);
 
   const {
@@ -125,7 +144,10 @@ export const useBlindFactorMarket = () => {
             currentAccount != null
               ? await marketReadContract
                   .getLenderBidId(BigInt(requestId), currentAccount)
-                  .catch(() => ({ bidId: 0, exists: false }))
+                  .catch((err: unknown) => {
+                    console.error(`[BlindFactor] getLenderBidId failed for request ${requestId}:`, err);
+                    return { bidId: 0, exists: false };
+                  })
               : { bidId: 0, exists: false };
 
           const status = Number(meta.status);
@@ -179,9 +201,10 @@ export const useBlindFactorMarket = () => {
         setActivityMessage(`${label} confirmed onchain.`);
         refresh();
       } catch (error) {
+        console.error(`[BlindFactor] ${label} failed:`, error);
         const raw = error instanceof Error ? error.message : String(error);
-        const message = raw.length > 160 ? raw.slice(0, 160) + "…" : raw;
-        setActivityMessage(`${label} failed: ${message}`);
+        const shortMessage = raw.length > 120 ? `${raw.slice(0, 120)}...` : raw;
+        setActivityMessage(`${label} failed: ${shortMessage}`);
         throw error;
       } finally {
         setPendingAction("");
@@ -205,7 +228,7 @@ export const useBlindFactorMarket = () => {
       const biddingEndsAt = now + payload.biddingHours * 60 * 60;
       const dueAt = biddingEndsAt + payload.dueDays * 24 * 60 * 60;
 
-      await runWrite("Create request", () =>
+      await runWrite(BLIND_FACTOR_ACTIONS.createRequest, () =>
         marketWriteContract.createRequest(
           ethers.hexlify(encrypted.handles[0]),
           ethers.hexlify(encrypted.handles[1]),
@@ -230,7 +253,7 @@ export const useBlindFactorMarket = () => {
         throw new Error("Failed to encrypt BlindFactor bid terms.");
       }
 
-      await runWrite("Submit bid", () =>
+      await runWrite(BLIND_FACTOR_ACTIONS.submitBid, () =>
         marketWriteContract.submitBid(
           BigInt(payload.requestId),
           ethers.hexlify(encrypted.handles[0]),
@@ -244,14 +267,14 @@ export const useBlindFactorMarket = () => {
 
   const closeBidding = useCallback(
     async (requestId: number) => {
-      await runWrite("Close bidding", () => marketWriteContract!.closeBidding(BigInt(requestId)));
+      await runWrite(BLIND_FACTOR_ACTIONS.closeBidding, () => marketWriteContract!.closeBidding(BigInt(requestId)));
     },
     [marketWriteContract, runWrite],
   );
 
   const acceptWinningBid = useCallback(
     async (requestId: number, winningBidIdClear: number) => {
-      await runWrite("Accept winning bid", () =>
+      await runWrite(BLIND_FACTOR_ACTIONS.acceptWinningBid, () =>
         marketWriteContract!.acceptWinningBid(BigInt(requestId), BigInt(winningBidIdClear)),
       );
     },
@@ -260,14 +283,14 @@ export const useBlindFactorMarket = () => {
 
   const fundAcceptedRequest = useCallback(
     async (requestId: number) => {
-      await runWrite("Fund request", () => marketWriteContract!.fundAcceptedRequest(BigInt(requestId)));
+      await runWrite(BLIND_FACTOR_ACTIONS.fundRequest, () => marketWriteContract!.fundAcceptedRequest(BigInt(requestId)));
     },
     [marketWriteContract, runWrite],
   );
 
   const markRepaid = useCallback(
     async (requestId: number) => {
-      await runWrite("Mark repaid", () => marketWriteContract!.markRepaid(BigInt(requestId)));
+      await runWrite(BLIND_FACTOR_ACTIONS.markRepaid, () => marketWriteContract!.markRepaid(BigInt(requestId)));
     },
     [marketWriteContract, runWrite],
   );
@@ -286,7 +309,8 @@ export const useBlindFactorMarket = () => {
           { key: "invoiceAmount", label: "Invoice amount", handle: invoiceAmount, contractAddress: marketAddress },
           { key: "minPayout", label: "Minimum payout", handle: minPayout, contractAddress: marketAddress },
         ];
-      } catch {
+      } catch (error) {
+        console.error(`[BlindFactor] loadRequestTermsItems failed for request ${requestId}:`, error);
         return [];
       }
     },
@@ -347,7 +371,8 @@ export const useBlindFactorMarket = () => {
             contractAddress: marketAddress,
           },
         ];
-      } catch {
+      } catch (error) {
+        console.error(`[BlindFactor] loadOwnBidItems failed for request ${requestId}, bid ${bidId}:`, error);
         return [];
       }
     },
@@ -359,10 +384,19 @@ export const useBlindFactorMarket = () => {
     try {
       const balanceHandle = await tokenReadContract.confidentialBalanceOf(currentAccount);
       return [{ key: "balance", label: "Confidential balance", handle: balanceHandle, contractAddress: tokenAddress }];
-    } catch {
+    } catch (error) {
+      console.error("[BlindFactor] loadBalanceItems failed:", error);
       return [];
     }
   }, [tokenReadContract, tokenAddress, currentAccount]);
+
+  const networkWarning = (() => {
+    if (hasDeployment || !chainId) return "";
+    if (chainId === 11155111) {
+      return "Sepolia deployment addresses are not set yet. Add NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA and NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA after deployment.";
+    }
+    return "BlindFactor is currently wired for local hardhat or Sepolia only.";
+  })();
 
   return {
     chainId,
@@ -392,11 +426,6 @@ export const useBlindFactorMarket = () => {
     loadWinningItems,
     loadOwnBidItems,
     loadBalanceItems,
-    networkWarning:
-      hasDeployment || !chainId
-        ? ""
-        : chainId === 11155111
-          ? "Sepolia deployment addresses are not set yet. Add NEXT_PUBLIC_BLINDFACTOR_MARKET_SEPOLIA and NEXT_PUBLIC_BLINDFACTOR_TOKEN_SEPOLIA after deployment."
-          : "BlindFactor is currently wired for local hardhat or Sepolia only.",
+    networkWarning,
   } as const;
 };

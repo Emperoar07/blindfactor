@@ -10,13 +10,23 @@ import { useWagmiEthers } from "~~/hooks/wagmi/useWagmiEthers";
 
 const INITIAL_MOCK_CHAINS = { 31337: "http://127.0.0.1:8545" } as const;
 
+declare global {
+  interface Window {
+    ethereum?: ethers.Eip1193Provider;
+  }
+}
+
 export const useTokenBalance = () => {
   const { address, chainId } = useAccount();
   const { ethersReadonlyProvider, ethersSigner } = useWagmiEthers(INITIAL_MOCK_CHAINS);
 
   const walletProvider = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    return (window as any).ethereum;
+    if (!window.ethereum) {
+      console.info("[BlindFactor] No injected wallet provider detected for token balance decryption.");
+      return undefined;
+    }
+    return window.ethereum;
   }, []);
 
   const { instance } = useFhevm({
@@ -59,14 +69,14 @@ export const useTokenBalance = () => {
     const token = new ethers.Contract(tokenAddress, BLIND_FACTOR_TOKEN_ABI, ethersReadonlyProvider);
     token.confidentialBalanceOf(address)
       .then((h: `0x${string}`) => setHandle(h))
-      .catch(() => undefined);
+      .catch((err: unknown) => console.error("[BalancePill] confidentialBalanceOf failed:", err));
   }, [address, tokenAddress, ethersReadonlyProvider]);
 
   // Trigger decrypt exactly once after revealed becomes true and canDecrypt is ready
   useEffect(() => {
     if (!revealed || decryptCalledRef.current || !decryptState.canDecrypt) return;
     decryptCalledRef.current = true;
-    void decryptState.decrypt();
+    decryptState.decrypt();
   }, [revealed, decryptState.canDecrypt, decryptState.decrypt]);
 
   const reveal = useCallback(() => {

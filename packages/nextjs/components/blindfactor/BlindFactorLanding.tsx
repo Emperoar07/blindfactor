@@ -69,8 +69,8 @@ export const BlindFactorLanding = () => {
           { label: "Completed Rounds", value: String(totalCount) },
           { label: "Settlement Token", value: "bfUSD" },
           { label: "Network",          value: chainId === 11155111 ? "Sepolia" : chainId === 31337 ? "Local" : "..." },
-        ].map((s, i) => (
-          <div key={i} className="bg-[#fffcf7] border-r border-[#ede4d5] last:border-r-0 px-8 py-7">
+        ].map(s => (
+          <div key={s.label} className="bg-[#fffcf7] border-r border-[#ede4d5] last:border-r-0 px-8 py-7">
             <div className="text-[34px] font-bold text-[#c45c2e] leading-none" style={{fontFamily:"'Fraunces',Georgia,serif"}}>{s.value}</div>
             <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a8a7e] mt-2">{s.label}</div>
           </div>

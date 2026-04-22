@@ -1,14 +1,14 @@
 "use client";
 
-import { useFHEEncryption } from "fhevm-sdk";
+import { type FhevmInstance, useFHEEncryption } from "fhevm-sdk";
 import { ethers } from "ethers";
 
 export const useBlindFactorEncryption = (parameters: {
-  instance: any;
+  instance: FhevmInstance | undefined;
   ethersSigner: ethers.JsonRpcSigner | undefined;
   contractAddress: `0x${string}` | undefined;
 }) => {
-  const { encryptWith, canEncrypt } = useFHEEncryption(parameters as any);
+  const { encryptWith, canEncrypt } = useFHEEncryption(parameters);
 
   const encryptRequestTerms = async (invoiceAmount: number, minPayout: number) => {
     if (!Number.isInteger(invoiceAmount) || invoiceAmount <= 0) throw new Error("Invoice amount must be a positive integer.");

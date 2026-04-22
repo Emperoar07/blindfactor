@@ -30,13 +30,20 @@ export const SubmitBidForm = ({
   const [payoutNow, setPayoutNow]           = useState("");
   const [repaymentAtDue, setRepaymentAtDue] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const error = validateBidForm(payoutNow, repaymentAtDue);
     if (error) { setValidationError(error); return; }
     setValidationError(null);
-    await onSubmit({ requestId, payoutNow: Number(payoutNow), repaymentAtDue: Number(repaymentAtDue) });
+    setSubmitError(null);
+    try {
+      await onSubmit({ requestId, payoutNow: Number(payoutNow), repaymentAtDue: Number(repaymentAtDue) });
+    } catch (err) {
+      console.error("[BlindFactor] submit bid failed:", err);
+      setSubmitError("Bid submission failed. Check wallet confirmation or the status message above.");
+    }
   };
 
   return (
@@ -68,6 +75,12 @@ export const SubmitBidForm = ({
         {validationError && (
           <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
             {validationError}
+          </p>
+        )}
+
+        {submitError && (
+          <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
+            {submitError}
           </p>
         )}
 

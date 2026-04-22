@@ -30,7 +30,7 @@ export const FaucetButton = () => {
         ) : (
           <button
             type="button"
-            onClick={() => void claim()}
+            onClick={claim}
             disabled={isPending}
             className="bf-btn-primary w-full"
           >

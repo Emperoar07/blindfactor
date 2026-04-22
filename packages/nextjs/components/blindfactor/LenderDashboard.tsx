@@ -4,7 +4,7 @@ import { DecryptPanel } from "./DecryptPanel";
 import { RequestCard } from "./RequestCard";
 import { SubmitBidForm } from "./SubmitBidForm";
 import { RainbowKitCustomConnectButton } from "~~/components/helper/RainbowKitCustomConnectButton";
-import { useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
+import { BLIND_FACTOR_ACTIONS, useBlindFactorMarket } from "~~/hooks/blindfactor/useBlindFactorMarket";
 
 export const LenderDashboard = () => {
   const blindFactor = useBlindFactorMarket();
@@ -107,7 +107,7 @@ export const LenderDashboard = () => {
               <SubmitBidForm
                 requestId={request.id}
                 disabled={!blindFactor.hasDeployment || blindFactor.pendingAction.length > 0}
-                isPending={blindFactor.pendingAction === "Submit bid"}
+                isPending={blindFactor.pendingAction === BLIND_FACTOR_ACTIONS.submitBid}
                 onSubmit={blindFactor.submitBid}
               />
             ) : null}
@@ -143,10 +143,14 @@ export const LenderDashboard = () => {
                   request.status === 2 ? (
                     <button
                       type="button"
-                      onClick={() => void blindFactor.fundAcceptedRequest(request.id)}
+                      onClick={() => {
+                        blindFactor.fundAcceptedRequest(request.id).catch(error => {
+                          console.error("[BlindFactor] fundAcceptedRequest failed:", error);
+                        });
+                      }}
                       className="mt-4 bf-btn-gold w-full text-sm"
                     >
-                      {blindFactor.pendingAction === "Fund request" ? "Funding..." : "Fund accepted request"}
+                      {blindFactor.pendingAction === BLIND_FACTOR_ACTIONS.fundRequest ? "Funding..." : "Fund accepted request"}
                     </button>
                   ) : (
                     <div className="mt-3 rounded-lg bg-[#fdf8f2] border border-[#ede4d5] px-3 py-2">

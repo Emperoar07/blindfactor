@@ -66,19 +66,26 @@ export const CreateRequestForm = ({
   const [dueDays, setDueDays]             = useState("");
   const [invoiceRef, setInvoiceRef]       = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const error = validateRequestForm(invoiceAmount, minPayout, biddingHours, dueDays, invoiceRef);
     if (error) { setValidationError(error); return; }
     setValidationError(null);
-    await onSubmit({
-      invoiceAmount: Number(invoiceAmount),
-      minPayout:     Number(minPayout),
-      biddingHours:  Number(biddingHours),
-      dueDays:       Number(dueDays),
-      invoiceRef,
-    });
+    setSubmitError(null);
+    try {
+      await onSubmit({
+        invoiceAmount: Number(invoiceAmount),
+        minPayout:     Number(minPayout),
+        biddingHours:  Number(biddingHours),
+        dueDays:       Number(dueDays),
+        invoiceRef,
+      });
+    } catch (err) {
+      console.error("[BlindFactor] create request submit failed:", err);
+      setSubmitError("Create request failed. Check wallet confirmation or the status message above.");
+    }
   };
 
   return (
@@ -123,6 +130,12 @@ export const CreateRequestForm = ({
         {validationError && (
           <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
             {validationError}
+          </p>
+        )}
+
+        {submitError && (
+          <p className="rounded-xl bg-[#fde8e8] border border-[#f4b8b8] px-4 py-3 text-xs text-[#9b2c2c]">
+            {submitError}
           </p>
         )}
 
