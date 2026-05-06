@@ -117,7 +117,15 @@ Current Sepolia deployment:
 
 ## Settlement token
 
-bfUSD is an OpenZeppelin confidential token interface compatible settlement token. All balances and transfer amounts are stored as `euint64` ciphertexts. The market contract moves tokens between parties using `marketTransferFrom` with encrypted amounts. Standard balance checks and transfers use FHE comparisons without revealing amounts.
+bfUSD implements OpenZeppelin's `IConfidentialFungibleToken` interface from [`@openzeppelin/confidential-contracts`](https://github.com/OpenZeppelin/openzeppelin-confidential-contracts). All balances and transfer amounts are stored as `euint64` ciphertexts. The market contract moves tokens between parties using `marketTransferFrom` with encrypted amounts. Standard balance checks and transfers use FHE comparisons without revealing amounts.
+
+The relevant import in [`packages/hardhat/contracts/BlindFactorToken.sol`](packages/hardhat/contracts/BlindFactorToken.sol):
+
+```solidity
+import {IConfidentialFungibleToken} from "@openzeppelin/confidential-contracts/interfaces/IConfidentialFungibleToken.sol";
+
+contract BlindFactorToken is ZamaEthereumConfig, Ownable2Step, IConfidentialFungibleToken { ... }
+```
 
 Token details:
 
