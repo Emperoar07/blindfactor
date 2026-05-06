@@ -49,6 +49,29 @@ describe("BlindFactorToken", function () {
     expect(bobBalance).to.eq(1_000n);
   });
 
+  it("faucets 10,000 bfUSD and enforces the 24h cooldown", async function () {
+    const FAUCET_AMOUNT = 10_000n * 1_000_000n;
+
+    await token.connect(signers.alice).faucet();
+
+    const handle = await token.confidentialBalanceOf(signers.alice.address);
+    const balance = await fhevm.userDecryptEuint(FhevmType.euint64, handle, tokenAddress, signers.alice);
+    expect(balance).to.eq(5_000n + FAUCET_AMOUNT);
+
+    await expect(token.connect(signers.alice).faucet()).to.be.revertedWithCustomError(
+      token,
+      "BlindFactorTokenFaucetCooldown",
+    );
+
+    await ethers.provider.send("evm_increaseTime", [24 * 60 * 60]);
+    await ethers.provider.send("evm_mine", []);
+
+    await token.connect(signers.alice).faucet();
+    const handle2 = await token.confidentialBalanceOf(signers.alice.address);
+    const balance2 = await fhevm.userDecryptEuint(FhevmType.euint64, handle2, tokenAddress, signers.alice);
+    expect(balance2).to.eq(5_000n + FAUCET_AMOUNT * 2n);
+  });
+
   it("supports confidential transfer from lender to borrower and back", async function () {
     const outbound = await fhevm.createEncryptedInput(tokenAddress, signers.alice.address).add64(400).encrypt();
 
