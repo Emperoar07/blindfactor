@@ -52,7 +52,6 @@ export const Header = () => {
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex">
-            {navLink("/", "Overview")}
             {navLink("/borrower", "Borrower")}
             {navLink("/lender", "Lender")}
             {navLink("/request", "Request Room")}
@@ -64,10 +63,6 @@ export const Header = () => {
           <div className="hidden items-center gap-2 md:flex">
             <span className="inline-flex items-center rounded-full border border-[rgba(74,124,89,0.25)] bg-[rgba(74,124,89,0.1)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4a7c59]">
               Testnet
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,92,46,0.18)] bg-[rgba(196,92,46,0.07)] px-2.5 py-1 text-[11px] font-bold text-[#8b3a1e]">
-              <span className="bf-lock-dot" />
-              FHE
             </span>
           </div>
           <BalancePill />
